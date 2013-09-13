@@ -4,6 +4,16 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 
+libraries:
+- name: webapp2
+  version: "2.5.1"
+
+- name: jinja2
+  version: latest
+
+builtins:
+- remote_api: on
+
 handlers:
 - url: /favicon\.ico
   static_files: favicon.ico
@@ -12,6 +22,3 @@ handlers:
 - url: .*
   script: main.app
 
-libraries:
-- name: webapp2
-  version: "2.5.2"
