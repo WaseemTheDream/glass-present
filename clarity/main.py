@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
 import webapp2
 import os
 import jinja2
@@ -24,10 +25,23 @@ PAGES_DIR = os.path.join(MAIN_DIR, 'pages')
 JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(PAGES_DIR))
 
 class MainHandler(webapp2.RequestHandler):
+    """
+    Serves the main app.
+    """
     def get(self):
         template = JINJA_ENV.get_template('main.html')
         self.response.out.write(template.render({}))
 
+class CreateHandler(webapp2.RequestHandler):
+    """
+    Handles create requests of presentations from the browser side.
+    """
+    def post(self):
+        drive_url = self.request.get('driveurl')
+        logging.info("Received the drive url: %s", drive_url)
+
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/create', CreateHandler)
 ], debug=True)
