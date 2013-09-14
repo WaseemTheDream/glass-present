@@ -1,8 +1,12 @@
-<div ng-show="currentSlide">
+<div id="slide-container" ng-show="currentSlide">
   <img src="{{ currentSlide.img_url }}"></img>
 </div>
 
-<button 
+<div id="qr-container" ng-show="presentationId && presenterId">
+  <img src="http://chart.apis.google.com/chart?cht=qr&chs=500x500&chl={{presentationId}}|{{presenterId}}&chld=H|0"></img>
+</div>
+
+<button
   class="btn btn-primary"
   ng-click="previousSlide()">
   Previous Slide
@@ -23,7 +27,3 @@
   ng-click="controllerRoundtrip()">
   Do Controller Roundtrip
 </button>
-
-<div ng-show="presentationId && presenterId">
-  <img src="http://chart.apis.google.com/chart?cht=qr&chs=400x400&chl={{presentationId}}|{{presenterId}}&chld=H|0"></img>
-</div>
