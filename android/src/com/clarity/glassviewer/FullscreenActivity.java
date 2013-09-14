@@ -54,6 +54,8 @@ public class FullscreenActivity extends Activity {
     private int mNumImagesLoaded = 0;
     private int mCurrentSlide = 0;
     private boolean mDisplayPreview = true;
+    private String mPresenterID;
+    private String mPresentationID;
 
     private boolean imagesLoaded() {
         return mNumImagesLoaded == mSlideBitmaps.length;
@@ -69,15 +71,6 @@ public class FullscreenActivity extends Activity {
         } catch (Exception e) {
         	System.err.println("There was a problem getting the payload.");
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         Gson gson = new Gson();
         Collection collection = new ArrayList();
@@ -118,37 +111,6 @@ public class FullscreenActivity extends Activity {
         }
 
         Log.d("FullscreenActivity", "onCreate complete");
-
-//
-//        String imageURL = "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png";
-//        new DownloadImageTask(0).execute(imageURL);
-//        String url2 = "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png";
-//        new DownloadImageTask(1).execute(url2);
-
-        // Bonnie's stuff!
-//        String initURL = "clarity-uho.appspot.com";
-//        HttpClient httpclient = new DefaultHttpClient();
-//        HttpPost httppost = new HttpPost(initURL);
-//
-//        try {
-//            // Add your data
-//            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-//            nameValuePairs.add(new BasicNameValuePair("action", "init"));
-//            nameValuePairs.add(new BasicNameValuePair("id", "5629499534213120"));
-//            Log.i("TEST", "bonnie1");
-//            try {
-//                UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(nameValuePairs);
-//                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//                HttpResponse response = httpclient.execute(httppost);
-//                Log.i("RESPONSE", "sigh... " + response.toString());
-//            } catch(Exception e) {
-//            }
-//
-//            // Execute HTTP Post Request
-//
-//        } catch (Exception e) {
-//        }
-
 
     }
     
@@ -198,6 +160,50 @@ public class FullscreenActivity extends Activity {
         mGestureDetector.onTouchEvent(event);
         Log.d("FullscreenActivity", "generic! generic! generic!");
         return true;
+    }
+
+    private class StartPresentationTask extends AsyncTask<Void, Void, Void> {
+
+        public StartPresentationTask() {
+            super();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            String initURL = "http://clarity-uho.appspot.com/api/glass";
+
+            HttpClient httpclient = new DefaultHttpClient();
+
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("presenter_id", mPresenterID));
+            nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
+
+            try {
+                String paramString = URLEncodedUtils.format(nameValuePairs, "utf-8");
+                String getURL = initURL + paramString;
+                HttpGet httpGet = new HttpGet(getURL);
+
+
+                HttpResponse response = httpclient.execute(httppost);
+                Log.i("RESPONSE", "sigh... " + response.toString());
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        response.getEntity().getContent(), "UTF-8"));
+                String json = reader.readLine();
+                // Instantiate a JSON object from the request response
+                JSONArray jsonArray = new JSONArray(json);
+
+            } catch(Exception e) {
+                Log.d("Exception", e.toString());
+            }
+            return null;
+        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
