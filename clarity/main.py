@@ -117,12 +117,13 @@ class ControllerHandler(webapp2.RequestHandler):
 
         slides_decoded = json.loads(presentation.slides)
 
-        channel.send_message(make_channel_name(
-            presentation_id=presentation_id,
-            presenter_id=presenter_id,
-        ), json.dumps({
-            'event': 'glass connected',
-        }))
+        # channel.send_message(make_channel_name(
+        #     presentation_id=presentation_id,
+        #     presenter_id=presenter_id,
+        # ), json.dumps({
+        #     'event': 'glass connected',
+        # }))
+
         out = {
             'presentation_id': str(presentation_id),
             'slides': slides_decoded

@@ -86,21 +86,14 @@ angular.module('clarityApp')
         console.log('received channel message');
         var data = JSON.parse(message.data)
 
-        if (data.event === 'glass connected') {
-          // Hide the QR code and show the slide if not connected yet
-          if (!connected) {
-            $('#qr-container').fadeTo('fast', 0, function() {
-              var $play_button = $('#play-button');
-              var $parent = $play_button.parent();
-              $play_button.css('position', 'absolute');
-              $play_button.css('top', '8em');
+        if (data.event == 'slide changed') {
+          $scope.presentationStarted = true;
+          // $('#qr-container').fadeTo('fast', 0, function() {
+          //   var $play_button = $('#play-button');
+          //   var $parent = $play_button.parent();
 
-              $("#play-button").fadeIn('slow');
-            });
-            connected = true;
-          }
-
-        } else if (data.event === 'slide changed') {
+          //   $("#play-button").fadeIn('slow');
+          // });
           if ($scope.pageIdToSlide[data.page_id]) {
             console.log('Changing slide to page_id ' + data.page_id);
             $scope.currentSlide = $scope.pageIdToSlide[data.page_id];
@@ -108,14 +101,13 @@ angular.module('clarityApp')
           } else {
             console.log('Invalid page_id ' + data.page_id + ' was sent.');
           }
-
         } else {
           console.log('Invalid event type');
         }
 
       },
       onerror: function (data) {
-        alert('onError');
+        console.log('onError');
         console.log(data);
       },
       onclose: function () {
