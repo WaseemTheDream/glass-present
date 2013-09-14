@@ -28,6 +28,8 @@ JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(MAIN_DIR))
 
 class Presentation(ndb.Model):
     drive_id = ndb.StringProperty()
+    init = ndb.BooleanProperty(default=False)
+    slide = ndb.IntegerProperty(default=1)
 
 class MainHandler(webapp2.RequestHandler):
     """
@@ -54,7 +56,7 @@ class CreateHandler(webapp2.RequestHandler):
             'id' : presentation_id,
             'driveid' : drive_id,
         })
-        self.redirect('/view?' + qstring)
+        self.redirect('/present/view?' + qstring)
 
 class ViewHandler(webapp2.RequestHandler):
     """
@@ -85,7 +87,7 @@ class GlassHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/create', CreateHandler),
-    ('/view', ViewHandler),
-    ('/glass', GlassHandler),
+    ('/api/create', CreateHandler),
+    ('/present/view', ViewHandler),
+    ('/api/glass', GlassHandler),
 ], debug=True)
