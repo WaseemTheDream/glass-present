@@ -16,7 +16,6 @@
         android:id="@+id/previewThumbnail"
         android:layout_height="112dp"
         android:layout_width="150dp"
-        android:background="@drawable/border"
         android:alpha="0.7"
         android:layout_gravity="bottom|right"/>
 

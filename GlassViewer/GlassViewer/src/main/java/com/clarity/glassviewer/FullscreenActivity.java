@@ -7,11 +7,25 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FullscreenActivity extends Activity {
 
@@ -29,6 +43,9 @@ public class FullscreenActivity extends Activity {
         return mNumImagesLoaded == mSlideBitmaps.length;
     }
 
+    private void startPresentation() {
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,35 +72,8 @@ public class FullscreenActivity extends Activity {
         for (int i = 0; i < urls.length; i++) {
             new DownloadImageTask(i).execute(urls[i]);
         }
-//
-//        String imageURL = "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png";
-//        new DownloadImageTask(0).execute(imageURL);
-//        String url2 = "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png";
-//        new DownloadImageTask(1).execute(url2);
 
-        // Bonnie's stuff!
-//        String initURL = "clarity-uho.appspot.com";
-//        HttpClient httpclient = new DefaultHttpClient();
-//        HttpPost httppost = new HttpPost(initURL);
-//
-//        try {
-//            // Add your data
-//            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-//            nameValuePairs.add(new BasicNameValuePair("action", "init"));
-//            nameValuePairs.add(new BasicNameValuePair("id", "5629499534213120"));
-//            Log.i("TEST", "bonnie1");
-//            try {
-//                UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(nameValuePairs);
-//                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//                HttpResponse response = httpclient.execute(httppost);
-//                Log.i("RESPONSE", "sigh... " + response.toString());
-//            } catch(Exception e) {
-//            }
-//
-//            // Execute HTTP Post Request
-//
-//        } catch (Exception e) {
-//        }
+        new StartPresentationTask().execute();
 
 
     }
@@ -102,10 +92,76 @@ public class FullscreenActivity extends Activity {
         mImageView.setImageBitmap(mSlideBitmaps[mCurrentSlide]);
     }
 
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+           Log.i("Keycodes down", "keyCode: " + keyCode);
+        return false;
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.i("Keycodes up", "keyCode: " + keyCode);
+        return false;
+    }
+
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+    }
+
+
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
         mGestureDetector.onTouchEvent(event);
         return true;
+    }
+
+    private class StartPresentationTask extends AsyncTask<Void, Void, Void> {
+
+        public StartPresentationTask() {
+            super();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            String initURL = "http://clarity-uho.appspot.com/api/glass";
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(initURL);
+
+            try {
+//                Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                nameValuePairs.add(new BasicNameValuePair("action", "init"));
+                nameValuePairs.add(new BasicNameValuePair("id", "5733953138851840"));
+                try {
+                    UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(nameValuePairs);
+                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                    HttpResponse response = httpclient.execute(httppost);
+                    Log.i("RESPONSE", "sigh... " + response.toString());
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(
+                            response.getEntity().getContent(), "UTF-8"));
+                    String json = reader.readLine();
+                    // Instantiate a JSON object from the request response
+                    JSONArray jsonArray = new JSONArray(json);
+
+                } catch(Exception e) {
+                    Log.d("Exception", e.toString());
+                }
+
+                // Execute HTTP Post Request
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+            }
+
+            return null;
+        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -117,6 +173,7 @@ public class FullscreenActivity extends Activity {
         }
 
         protected Bitmap doInBackground(String... urls) {
+            Log.d("Async", "findme: doInBackground on " + mIndex);
             String urldisplay = urls[0];
             Bitmap mIcon11 = null;
             try {
@@ -132,6 +189,8 @@ public class FullscreenActivity extends Activity {
         protected void onPostExecute(Bitmap result) {
             mSlideBitmaps[mIndex] = result;
             mNumImagesLoaded++;
+
+            Log.d("Async", "findme: onPostExecute: " + mIndex);
 
             if (imagesLoaded()) {
                 Log.i("Async", "findme: Finished loading all images.");
