@@ -9,6 +9,7 @@ angular.module('clarityApp')
     $scope.slides = [];
     $scope.pageIdToSlide = {};
     $scope.currentSlide = {};
+    $scope.presentationStarted = false;
 
     $scope.nextSlide = function () {
       var index = $scope.slides.indexOf($scope.currentSlide);
@@ -113,8 +114,9 @@ angular.module('clarityApp')
         }
 
       },
-      onerror: function () {
+      onerror: function (data) {
         alert('onError');
+        console.log(data);
       },
       onclose: function () {
         console.log('channel connection closed');

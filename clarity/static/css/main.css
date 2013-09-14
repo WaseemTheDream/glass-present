@@ -29,10 +29,26 @@ h1 {
 }
 
 .splash-box {
-  max-width: 540px;
   margin: 0 auto;
   background-color: rgba(224,224,224, 0.75);
   padding: 15px;
+}
+
+.small {
+  max-width: 540px;
+}
+
+.present {
+  text-align: center;
+  margin: 0 50px;
+}
+
+.qr-code {
+  vertical-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .form-signin {
