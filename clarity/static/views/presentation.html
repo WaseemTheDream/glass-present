@@ -22,7 +22,7 @@
   Next Slide
 </button>
 
-<button id="full-screen" class="btn btn-default">Full screen</button>
+<button class="btn btn-default" ng-click="fullScreen()">Full screen</button>
 
 <input
   ng-model="pageId"
@@ -35,14 +35,6 @@
 </button>
 
 <script>
-  $('#full-screen').click(function() {
-    console.log("Click");
-    if (screenfull.enabled) {
-      console.log("Attempt to full screen");
-      screenfull.request($('#slide-container img').get(0));
-    }
-  });
-
   document.addEventListener(screenfull.raw.fullscreenchange, function() {
     console.log("resize");
     if (screenfull.isFullScreen) {

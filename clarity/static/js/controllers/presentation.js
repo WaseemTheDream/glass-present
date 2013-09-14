@@ -60,6 +60,12 @@ angular.module('clarityApp')
       });
     }
 
+    $scope.fullScreen = function () {
+      if (screenfull.enabled) {
+        screenfull.request($('#slide-container img').get(0));
+      }
+    };
+
     var connected = false;
     $scope.channel = {
       onopen: function () {
