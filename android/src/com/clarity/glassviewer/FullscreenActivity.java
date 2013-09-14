@@ -48,8 +48,7 @@ public class FullscreenActivity extends Activity {
     private GestureDetector mGestureDetector;
     private GlassGestureListener mGlassGestureListener;
     private Chronometer mChronometer;
-
-    private Bitmap[] mSlideBitmaps;
+    private Slide[] mSlides;
     private ImageView mImageView;
     private ImageView mThumbnailView;
     private int mNumImagesLoaded = 0;
@@ -59,7 +58,13 @@ public class FullscreenActivity extends Activity {
     private String mPresentationID;
 
     private boolean imagesLoaded() {
-        return mNumImagesLoaded == mSlideBitmaps.length;
+        return mNumImagesLoaded == mSlides.length;
+    }
+
+    private void goToSlide(int slideNo) {
+        new SlideChangeTask(mSlides[slideNo].getPage_id()).execute();
+        mCurrentSlide = slideNo;
+        renderSlide();
     }
 
     @Override
@@ -98,23 +103,19 @@ public class FullscreenActivity extends Activity {
         mChronometer.setVisibility(View.INVISIBLE);
 
         mGlassGestureListener = new GlassGestureListener();
-        mSlideBitmaps = new Bitmap[2];
 
         mGestureDetector = new GestureDetector(this, mGlassGestureListener);
 
-        String[] urls = {
-                "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png",
-                "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png",
-                "http://images3.wikia.nocookie.net/__cb20120116195460/fantendo/images/2/20/SM3DL2_Luigi.png",
-                "http://images2.wikia.nocookie.net/__cb20130525205357/jadensadventures/images/c/c4/7674397_display.png",
-                "http://images.wikia.com/mariofanon/images/c/c9/Toad.png",
-                "http://images.wikia.com/fantendo/images/archive/9/95/20090714164416!200px-Koopa.png",
+        mSlides = {
+            new Slide("hi", "a", "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png"),
+            new Slide("hi", "a", "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png"),
+            new Slide("hi", "a", "http://images.wikia.com/mariofanon/images/c/c9/Toad.png"),
         };
 
-        mSlideBitmaps = new Bitmap[urls.length];
-        for (int i = 0; i < urls.length; i++) {
-            new DownloadImageTask(i).execute(urls[i]);
+        for (int i = 0; i < mSlides.length; i++) {
+            new DownloadImageTask(i).execute(mSlides[i].getImg_url());
         }
+
 
         Log.d("FullscreenActivity", "onCreate complete");
 
@@ -149,16 +150,16 @@ public class FullscreenActivity extends Activity {
 
     private void renderSlide() {
         // Relies on mCurrentSlide and mDisplayPreview
-        if (!mDisplayPreview || mCurrentSlide + 1 == mSlideBitmaps.length) {
+        if (!mDisplayPreview || mCurrentSlide + 1 == mSlides.length) {
             mThumbnailView.setVisibility(View.GONE);
         }
-        else if (mCurrentSlide + 1 < mSlideBitmaps.length) {
+        else if (mCurrentSlide + 1 < mSlides.length) {
             mThumbnailView.setVisibility(View.VISIBLE);
-            mThumbnailView.setImageBitmap(mSlideBitmaps[mCurrentSlide+1]);
+            mThumbnailView.setImageBitmap(mSlides[mCurrentSlide+1].getBitmap());
         }
 
         mImageView.setVisibility(View.VISIBLE);
-        mImageView.setImageBitmap(mSlideBitmaps[mCurrentSlide]);
+        mImageView.setImageBitmap(mSlides[mCurrentSlide].getBitmap());
     }
 
     @Override
@@ -290,13 +291,12 @@ public class FullscreenActivity extends Activity {
         }
 
         protected void onPostExecute(Bitmap result) {
-            mSlideBitmaps[mIndex] = result;
+            mSlides[mIndex].setBitmap(result);
             mNumImagesLoaded++;
 
             if (imagesLoaded()) {
                 Log.i("Async", "findme: Finished loading all images.");
-                mCurrentSlide = 0;
-                renderSlide();
+                goToSlide(0);
             }
         }
     }
@@ -314,16 +314,18 @@ public class FullscreenActivity extends Activity {
                     if (Math.abs(totalXTraveled) > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                         if (totalXTraveled > 10) {
                             Log.d("Event", "findme: On Fling Forward");
-                            if (imagesLoaded() && mCurrentSlide + 1 < mSlideBitmaps.length) {
-                                mCurrentSlide++;
-                                renderSlide();
+                            if (imagesLoaded() && mCurrentSlide + 1 < mSlides.length) {
+                                goToSlide(mCurrentSlide + 1);
+                                // mCurrentSlide++;
+                                // renderSlide();
                             }
 
                         } else {
                             Log.d("Event", "findme: On Fling Backward");
                             if (imagesLoaded() && mCurrentSlide > 0) {
-                                mCurrentSlide--;
-                                renderSlide();
+                                goToSlide(mCurrentSlide - 1);
+                                // mCurrentSlide--;
+                                // renderSlide();
                             }
                         }
                     }
