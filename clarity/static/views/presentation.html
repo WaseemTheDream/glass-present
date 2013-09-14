@@ -1,9 +1,13 @@
-<div id="slide-container" ng-show="currentSlide">
-  <img src="{{ currentSlide.img_url }}"></img>
-</div>
+<div class="row">
+  <div id="qr-container" class="col-md-7" ng-show="presentationId && presenterId">
+    <img src="http://chart.apis.google.com/chart?cht=qr&chs=500x500&chl={{presentationId}}|{{presenterId}}&chld=H|0"
+    alt="QR code" class="img-responsive">
+  </div>
 
-<div id="qr-container" ng-show="presentationId && presenterId">
-  <img src="http://chart.apis.google.com/chart?cht=qr&chs=500x500&chl={{presentationId}}|{{presenterId}}&chld=H|0"></img>
+  <div id="slide-container" class="col-md-5" ng-show="currentSlide">
+    <img src="{{ currentSlide.img_url }}" alt="Current slide"
+      class="img-responsive">
+  </div>
 </div>
 
 <button
@@ -18,7 +22,9 @@
   Next Slide
 </button>
 
-<input 
+<button id="full-screen" class="btn btn-default">Full screen</button>
+
+<input
   ng-model="pageId"
   required>
 </input>
@@ -27,3 +33,25 @@
   ng-click="controllerRoundtrip()">
   Do Controller Roundtrip
 </button>
+
+<script>
+  $('#full-screen').click(function() {
+    console.log("Click");
+    if (screenfull.enabled) {
+      console.log("Attempt to full screen");
+      screenfull.request($('#slide-container img').get(0));
+    }
+  });
+
+  document.addEventListener(screenfull.raw.fullscreenchange, function() {
+    console.log("resize");
+    if (screenfull.isFullScreen) {
+      console.log("full screen");
+      $('#slide-container img').get(0).height = window.innerHeight;
+    } else {
+      console.log("Not full screen");
+      $('#slide-container img').get(0).height =
+        $('#slide-container').get(0).clientHeight;
+    }
+  });
+</script>
