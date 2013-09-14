@@ -88,9 +88,7 @@ public class FullscreenActivity extends Activity {
         
         new StartPresentationTask().execute();
 
-
         Log.d("FullscreenActivity", "onCreate complete");
-
     }
     
     private String getServerPayload() throws Exception {
