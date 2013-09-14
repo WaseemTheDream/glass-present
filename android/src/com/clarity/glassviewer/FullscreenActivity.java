@@ -168,6 +168,72 @@ public class FullscreenActivity extends Activity {
         return true;
     }
 
+    private HttpResponse httpPost(String initURL, List<NameValuePair> nameValuePairs) {
+        HttpClient httpclient = new DefaultHttpClient();
+        try {
+                HttpGet httppost = new HttpPost(initURL);
+                UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(nameValuePairs);
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                HttpResponse response = httpclient.execute(httppost);
+                return response;
+                // Log.i("RESPONSE", "sigh... " + response.toString());
+
+                // BufferedReader reader = new BufferedReader(new InputStreamReader(
+                //         response.getEntity().getContent(), "UTF-8"));
+                // String json = reader.readLine();
+                // // Instantiate a JSON object from the request response
+                // JSONArray jsonArray = new JSONArray(json);
+
+        } catch(Exception e) {
+                Log.d("Exception", e.toString());
+        }
+        return null;
+    }
+
+    private HttpResponse httpGet(String initURL, List<NameValuePair> nameValuePairs) {
+        HttpClient httpclient = new DefaultHttpClient();
+        try {
+                String paramString = URLEncodedUtils.format(nameValuePairs, "utf-8");
+                String getURL = initURL + paramString;
+                HttpGet httpGet = new HttpGet(getURL);
+
+
+                HttpResponse response = httpclient.execute(httppost);
+                return response;
+                // Log.i("RESPONSE", "sigh... " + response.toString());
+
+                // BufferedReader reader = new BufferedReader(new InputStreamReader(
+                //         response.getEntity().getContent(), "UTF-8"));
+                // String json = reader.readLine();
+                // // Instantiate a JSON object from the request response
+                // JSONArray jsonArray = new JSONArray(json);
+
+        } catch(Exception e) {
+                Log.d("Exception", e.toString());
+        }
+        return null;
+    } 
+
+    private class SlideChangeTask extends AsyncTask<Void, Void, Void> {
+
+        private String mPageID;
+
+        public SlideChangeTask(String pageid) {
+            mPageID = pageid;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String initURL = "http://clarity-uho.appspot.com/api/controller";
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("page_id", mPageID));
+            nameValuePairs.add(new BasicNameValuePair("presenter_id", mPresenterID));
+            nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
+            httpPost(initURL, nameValuePairs);
+            return null;
+        }
+    }
+
     private class StartPresentationTask extends AsyncTask<Void, Void, Void> {
 
         public StartPresentationTask() {
@@ -185,20 +251,11 @@ public class FullscreenActivity extends Activity {
         protected Void doInBackground(Void... voids) {
 
             String initURL = "http://clarity-uho.appspot.com/api/glass";
-
-            HttpClient httpclient = new DefaultHttpClient();
-
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("presenter_id", mPresenterID));
             nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
+            HttpResponse response = httpGet(initURL, nameValuePairs);
 
-            try {
-                String paramString = URLEncodedUtils.format(nameValuePairs, "utf-8");
-                String getURL = initURL + paramString;
-                HttpGet httpGet = new HttpGet(getURL);
-
-
-                HttpResponse response = httpclient.execute(httppost);
                 Log.i("RESPONSE", "sigh... " + response.toString());
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -207,9 +264,6 @@ public class FullscreenActivity extends Activity {
                 // Instantiate a JSON object from the request response
                 JSONArray jsonArray = new JSONArray(json);
 
-            } catch(Exception e) {
-                Log.d("Exception", e.toString());
-            }
             return null;
         }
     }
