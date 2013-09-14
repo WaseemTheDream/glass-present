@@ -7,7 +7,7 @@ angular.module('clarityApp')
         driveurl: $scope.driveUrl
       };
       $http({
-        url: '/api/create',
+        url: '/api/presentation',
         method: 'POST',
         data: JSON.stringify(data)
       }).success(function (data, status, headers, config) {

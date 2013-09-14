@@ -46,12 +46,13 @@ class PresentationHandler(webapp2.RequestHandler):
     Handles create requests of presentations from the browser side.
     """
     parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-_]+)')
-    def post(self):
+    def put(self):
         drive_url = json.loads(self.request.body)['driveurl']
         logging.info("Received the drive url: %s", drive_url)
+
         match = CreateHandler.parse_url_regex.search(drive_url)
         drive_id = match.group(1)
-        presentation = Presentation(drive_id = drive_id)
+        presentation = Presentation(drive_id=drive_id)
         presentation_id = presentation.put().id()
         logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
         slides = get_metadata(drive_id)
@@ -71,18 +72,32 @@ class PresentationHandler(webapp2.RequestHandler):
             ],
         }));
 
-    def put(self):
-        drive_url = json.loads(self.request.body)['drive_url']
+    def post(self):
+        drive_url = json.loads(self.request.body)['driveurl']
         logging.info("Received the drive url: %s", drive_url)
-
         drive_id = self.parse_url(drive_url)
-        presentation = 
-            Presentation.query(Presentation.drive_id == drive_id).get()
 
-        # If presentation already exists, update it. Otherwise create a new one
+        presentation = \
+            Presentation.query(Presentation.drive_id == drive_id).get()
+        if presentation is None:
+            presentation = Presentation(drive_id=drive_id)
+
+        slides = get_metadata(drive_id)
+        slides_str = json.dumps(slides)
+        logging.info(slides_str)
+        presentation.slides = slides_str
+        presentation.put()
+
+        token = channel.create_channel(str(presentation_id))
+        self.response.write(json.dumps({
+            'id' : str(presentation_id),
+            'driveid' : drive_id,
+            'token': token,
+            'slides' : slides,
+        }));
 
     def get(self, drive_id):
-        presentation = 
+        presentation = \
             Presentation.query(Presentation.drive_id == drive_id).get()
         if not presentation:
             self.abort(404)
@@ -137,6 +152,7 @@ class GlassHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/api/presentation', PresentationHandler),
     ('/api/presentation/<drive_id>', PresentationHandler),
     ('/api/glass', GlassHandler),
 ], debug=True)
