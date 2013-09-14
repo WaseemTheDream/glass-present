@@ -7,7 +7,7 @@ angular.module('clarityApp', [])
 				templateUrl: 'static/views/select-presentation.html',
 				controller: 'MainCtrl'
 			})
-			.when('/', {
+			.when('/present', {
 				templateUrl: 'static/views/present.html',
 				controller: 'PresentCtrl'
 			})
