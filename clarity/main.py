@@ -54,28 +54,19 @@ class CreateHandler(webapp2.RequestHandler):
         presentation = Presentation(drive_id = drive_id)
         presentation_id = presentation.put().id()
         logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
-        out = {
-            'id' : presentation_id,
+
+        token = channel.create_channel(str(presentation_id))
+        self.response.write(json.dumps({
+            'id' : str(presentation_id),
             'driveid' : drive_id,
+            'token': token,
             'slides' : [
                 {'title': 'Slide 1', 'pageid': 'g103b5c5cc_00'},
                 {'title': 'Slide 2', 'pageid': 'g103b5c5cc_05'},
                 {'title': 'Slide 3', 'pageid': 'g103b5c5e5_00'},
-            ]
-        }
-        self.response.write(json.dumps(out))
+            ],
+        }));
 
-class ViewHandler(webapp2.RequestHandler):
-    """
-    Shows the web view of the presentation (mainly JS)
-    """
-    def get(self):
-        drive_id = self.request.get('driveid')
-        presentation_id = int(self.request.get('id'))
-
-        token = channel.create_channel(str(presentation_id))
-        # TODO: render a page with the token
-        self.response.out.write('Should show doc presentation %s (id %d)' % (drive_id, presentation_id))
 
 class GlassHandler(webapp2.RequestHandler):
     """
@@ -118,6 +109,5 @@ class GlassHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/api/create', CreateHandler),
-    ('/present/view', ViewHandler),
     ('/api/glass', GlassHandler),
 ], debug=True)
