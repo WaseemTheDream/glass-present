@@ -75,14 +75,21 @@ class GlassHandler(webapp2.RequestHandler):
     def post(self):
         action = self.request.get('action')
         logging.info('glass posted action ' + action)
+
         if action == 'init':
             presentation_id = int(self.request.get('id'))
             presentation = ndb.get(presentation_id)
-            loggin.info(presentation_id)
+            presentation.init = true
+            presentation.put()
+            logging.info(presentation_id)
             self.response.out.write(presentation.drive_id)
             # TODO: javascript comm stuff
+
         elif action == 'change_slide':
             slide = int(self.request.get('slide'))
+            presentation = ndb.get(presentation_id)
+            presentation.slide = slide
+            presentation.put()
             # TODO: javascript comm stuff
 
 app = webapp2.WSGIApplication([
