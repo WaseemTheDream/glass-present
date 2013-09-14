@@ -7,6 +7,10 @@ angular.module('clarityApp', [])
 				templateUrl: 'static/views/select-presentation.html',
 				controller: 'MainCtrl'
 			})
+			.when('/', {
+				templateUrl: 'static/views/present.html',
+				controller: 'PresentCtrl'
+			})
 			.otherwise({
 				redirectTo: '/'
 			});
