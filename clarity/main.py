@@ -89,6 +89,7 @@ class PresentationHandler(webapp2.RequestHandler):
             "slides": slides_decoded,
             "token": token,
         }
+        logging.info('%s %s' % (presentation_id, presenter_id))
         self.response.write(json.dumps(out))
 
     @staticmethod
@@ -158,43 +159,3 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/api/controller', ControllerHandler),
     webapp2.Route('/api/controller/<presentation_id:\d+>', ControllerHandler),
 ], debug=True)
-
-
-
-# Legacy code
-class GlassHandler(webapp2.RequestHandler):
-    """
-    Handles glass queries and commands
-    """
-
-    def post(self):
-        action = self.request.get('action')
-        logging.info('glass posted action ' + action)
-
-        if action == 'init':
-            presentation_id = int(self.request.get('id'))
-            presentation = Presentation.get_by_id(presentation_id)
-            logging.info(presentation_id)
-
-            # Send message to browser client
-            channel.send_message(make_channel_name(
-                presentation_id=presentation_id,
-                presenter_id=presenter_id,
-            ), json.dumps({'status': 'connected'}))
-
-            self.response.out.write(presentation.slides)
-
-        elif action == 'change_slide':
-            slide = int(self.request.get('slide'))
-            presentation = Presentation.get_by_id(presentation_id)
-
-            channel.send_message(make_channel_name(
-                presentation_id=presentation_id,
-                presenter_id=presenter_id,
-            ), json.dumps({
-                    'status': 'slide changed',
-                    'slide': slide,
-                })
-            )
-
-            self.response.out.write(presentation.drive_id)

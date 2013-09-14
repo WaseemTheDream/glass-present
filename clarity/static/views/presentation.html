@@ -1,22 +1,38 @@
-<div class="row">
-  <!-- container -->
-  <div class="col-md-6">
+<h1>Clarity</h1>
+<div class="splash-box present">
+  <h3 class="form-signin-heading">Scan QR Code</h3>
+  <p>Scan the QR Code on Glass to start presentation.</p>
+  <div class="form-group">
+    <!-- QR Code -->
     <div id="qr-container" ng-show="presentationId && presenterId">
       <img src="http://chart.apis.google.com/chart?cht=qr&chs=500x500&chl={{presentationId}}|{{presenterId}}&chld=H|0"
-      alt="QR code" class="img-responsive">
+      alt="QR code" class="img-responsive qr-code">
     </div>
 
+    <!-- Manual Start Button -->
     <button id="play-button"
-      class="btn btn-primary btn-lg" ng-click="fullScreen()" style="display: none;">
+      class="btn btn-primary btn-lg btn-block" ng-click="fullScreen()">
       <span class="glyphicon glyphicon-play"></span> Start presentation
     </button>
-  </div>
 
-  <div id="slide-container" class="col-md-6" ng-show="currentSlide">
-    <img src="{{ currentSlide.img_url }}" alt="Current slide"
-      class="img-responsive">
+    <div 
+      ng-repeat="slide in slides"
+      id="slide-container" 
+      class="col-md-6" 
+      ng-show="slide == currentSlide && presentationStarted">
+      <img src="{{ currentSlide.img_url }}" alt="Current slide"
+        class="img-responsive">
+    </div>
   </div>
 </div>
+
+
+
+<div class="row margin-fix">
+  <!-- container -->
+  <div class="col-md-6">
+</div>
+
 
 <div class="row">
   <button

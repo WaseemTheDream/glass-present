@@ -9,6 +9,7 @@ angular.module('clarityApp')
     $scope.slides = [];
     $scope.pageIdToSlide = {};
     $scope.currentSlide = {};
+    $scope.presentationStarted = false;
 
     $scope.nextSlide = function () {
       var index = $scope.slides.indexOf($scope.currentSlide);
@@ -88,7 +89,12 @@ angular.module('clarityApp')
         if (data.event === 'glass connected') {
           // Hide the QR code and show the slide if not connected yet
           if (!connected) {
-            $('#qr-container').fadeOut('fast', function() {
+            $('#qr-container').fadeTo('fast', 0, function() {
+              var $play_button = $('#play-button');
+              var $parent = $play_button.parent();
+              $play_button.css('position', 'absolute');
+              $play_button.css('top', '8em');
+
               $("#play-button").fadeIn('slow');
             });
             connected = true;
@@ -108,8 +114,9 @@ angular.module('clarityApp')
         }
 
       },
-      onerror: function () {
+      onerror: function (data) {
         alert('onError');
+        console.log(data);
       },
       onclose: function () {
         console.log('channel connection closed');
