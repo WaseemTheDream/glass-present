@@ -27,7 +27,8 @@
         android:layout_width="150dp"
         android:background="@drawable/border"
         android:alpha="0.7"
-        android:layout_gravity="bottom|right"/>
+        android:layout_gravity="bottom|right"
+        android:visibility="invisible"/>
 
     <Chronometer
         android:id="@+id/timer"
@@ -46,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_gravity="right|bottom"
         android:orientation="horizontal"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:padding="15dp"
         >
 

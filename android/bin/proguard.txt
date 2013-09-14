@@ -1,9 +1,9 @@
-# view AndroidManifest.xml #generated:15
+# view AndroidManifest.xml #generated:16
 -keep class com.clarity.glassviewer.CameraTestActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:25
+# view AndroidManifest.xml #generated:27
 -keep class com.clarity.glassviewer.FullscreenActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:21
+# view AndroidManifest.xml #generated:23
 -keep class com.clarity.glassviewer.MainActivity { <init>(...); }
 

@@ -6,43 +6,33 @@
  */
 package com.clarity.glassviewer;
 
-import com.clarity.glassviewer.CameraPreview;
-import com.clarity.glassviewer.R;
-
-
-import android.app.Activity;
-import android.content.pm.ActivityInfo;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.FrameLayout;
-import android.widget.Button;
-
-import android.hardware.Camera;
-import android.hardware.Camera.PreviewCallback;
-import android.hardware.Camera.AutoFocusCallback;
-import android.hardware.Camera.Parameters;
-import android.hardware.Camera.Size;
-
-import android.widget.TextView;
-import android.graphics.ImageFormat;
-
-/* Import ZBar Class files */
-import net.sourceforge.zbar.ImageScanner;
+import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
+import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
-import net.sourceforge.zbar.Config;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.Camera.PreviewCallback;
+import android.hardware.Camera.Size;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+/* Import ZBar Class files */
 
 public class CameraTestActivity extends Activity
 {
     private Camera mCamera;
     private CameraPreview mPreview;
     private Handler autoFocusHandler;
+    private Context mContext;
 
     TextView scanText;
     Button scanButton;
@@ -58,6 +48,7 @@ public class CameraTestActivity extends Activity
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
 
         setContentView(R.layout.main);
 
@@ -142,7 +133,11 @@ public class CameraTestActivity extends Activity
                     SymbolSet syms = scanner.getResults();
                     for (Symbol sym : syms) {
                         scanText.setText("barcode result " + sym.getData());
+                        Intent presentation = new Intent(mContext, FullscreenActivity.class);
+                        presentation.putExtra("qr", sym.getData());
                         barcodeScanned = true;
+                        startActivity(presentation);
+                        break;
                     }
                 }
             }
