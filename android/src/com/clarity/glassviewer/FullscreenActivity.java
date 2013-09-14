@@ -1,15 +1,27 @@
 package com.clarity.glassviewer;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -20,11 +32,9 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.ImageView;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
+import android.widget.TextView;
 
 public class FullscreenActivity extends Activity {
 	private static final String USER_AGENT = "Mozilla/5.0";
@@ -40,8 +50,8 @@ public class FullscreenActivity extends Activity {
     private int mCurrentSlide = 0;
     private boolean mDisplayPreview = true;
     private boolean mDisplayNotes = false;
-    private String mPresenterID;
-    private String mPresentationID;
+    private String mPresenterID = "ab60dc96-dcb8-4e53-afed-fd23c63b4476";
+    private String mPresentationID = "5733953138851840";
     private TextView mSlideNumberView;
     private View mSlideNumberWrapper;
 
@@ -75,19 +85,24 @@ public class FullscreenActivity extends Activity {
 
         mGestureDetector = new GestureDetector(this, mGlassGestureListener);
 
+        /*
         mSlides = new Slide[]{
             new Slide("hi this is notes 1111", "a", "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png"),
             new Slide("hi I am looking at notes 2222!", "a", "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png"),
             new Slide("hi. I'm lazy.", "a", "http://images.wikia.com/mariofanon/images/c/c9/Toad.png"),
-        };
+        };*/
 
+        /*
         for (int i = 0; i < mSlides.length; i++) {
             new DownloadImageTask(i).execute(mSlides[i].getImg_url());
         }
+        */
+        
+        new StartPresentationTask().execute();
 
         Log.d("FullscreenActivity", "onCreate complete");
     }
-    
+    /*
     private String getServerPayload() throws Exception {
 		String url = "http://www.google.com/search?q=developer";
 		 
@@ -114,7 +129,7 @@ public class FullscreenActivity extends Activity {
  
 		return result.toString();
     }
-
+     */
     private void renderSlide() {
 
         mSlideNumberView.setText(mCurrentSlide + " / " + mSlides.length);
@@ -171,16 +186,13 @@ public class FullscreenActivity extends Activity {
         return null;
     }
 
-    private HttpResponse httpGet(String initURL, List<NameValuePair> nameValuePairs) {
+    private HttpResponse httpGet(String initURL) {
         HttpClient httpclient = new DefaultHttpClient();
         try {
-                String paramString = URLEncodedUtils.format(nameValuePairs, "utf-8");
-                String getURL = initURL + paramString;
-                HttpGet httpGet = new HttpGet(getURL);
 
-
-                HttpResponse response = httpclient.execute(httpGet);
-                return response;
+            HttpGet httpGet = new HttpGet(initURL);
+            HttpResponse response = httpclient.execute(httpGet);
+            return response;
                 // Log.i("RESPONSE", "sigh... " + response.toString());
 
                 // BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -224,26 +236,42 @@ public class FullscreenActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mChronometer.setVisibility(View.VISIBLE);
-            mChronometer.start();
+            
+            for (int i = 0; i < mSlides.length; i++) {
+            	new DownloadImageTask(i).execute(mSlides[i].getImg_url());
+            }
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-
-            String initURL = "http://clarity-uho.appspot.com/api/glass";
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("presenter_id", mPresenterID));
-            nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
-            HttpResponse response = httpGet(initURL, nameValuePairs);
-
-                // Log.i("RESPONSE", "sigh... " + response.toString());
-
-                // BufferedReader reader = new BufferedReader(new InputStreamReader(
-                //         response.getEntity().getContent(), "UTF-8"));
-                // String json = reader.readLine();
-                // // Instantiate a JSON object from the request response
-                // JSONArray jsonArray = new JSONArray(json);
+            String initURL = "http://clarity-uho.appspot.com/api/controller/" +
+                    mPresentationID + "?presenter_id=" + mPresenterID;
+            HttpResponse response = httpGet(initURL);
+ 
+         BufferedReader reader;
+         String json;
+    		try {
+    			reader = new BufferedReader(new InputStreamReader(
+    			         response.getEntity().getContent(), "UTF-8"));
+    			json = reader.readLine();
+    			Log.d("GSON", json);
+    	         
+    			Gson gson = new Gson();
+    	        JsonParser parser = new JsonParser();
+    	        JsonObject jsonObject = parser.parse(json).getAsJsonObject();
+    	        JsonArray slides = jsonObject.getAsJsonArray("slides");
+    	        mSlides = new Slide[slides.size()];
+    	        for (int i = 0; i < slides.size(); i++) {
+    	            mSlides[i] = gson.fromJson(slides.get(i), Slide.class);
+    	            Log.d("SLIDES", "Slide = " + mSlides[i]);
+    	        }
+    		} catch (UnsupportedEncodingException e) {
+    			e.printStackTrace();
+    		} catch (IllegalStateException e) {
+    			e.printStackTrace();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
 
             return null;
         }
@@ -277,6 +305,8 @@ public class FullscreenActivity extends Activity {
             if (imagesLoaded()) {
                 Log.i("Async", "findme: Finished loading all images.");
                 goToSlide(0);
+                mChronometer.setVisibility(View.VISIBLE);
+                mChronometer.start();
             }
         }
     }

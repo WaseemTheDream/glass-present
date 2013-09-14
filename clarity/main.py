@@ -89,6 +89,7 @@ class PresentationHandler(webapp2.RequestHandler):
             "slides": slides_decoded,
             "token": token,
         }
+        logging.info('%d %s' % (presentation_id, presenter_id))
         self.response.write(json.dumps(out))
 
     @staticmethod
@@ -147,7 +148,7 @@ class ControllerHandler(webapp2.RequestHandler):
             'page_id': page_id,
         }))
 
-        self.response.out.write(presentation.drive_id)
+        self.response.out.write('true')
 
 
 

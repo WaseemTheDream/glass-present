@@ -51,4 +51,8 @@ public class Slide {
         this.img_url = img_url;
     }
 
+    @Override
+    public String toString() {
+    	return "speaker_notes = " + speaker_notes + ", page_id = " + page_id + ", img_url = " + img_url + ", bitmap = " + bitmap;
+    }
 }
