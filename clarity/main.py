@@ -79,7 +79,7 @@ class GlassHandler(webapp2.RequestHandler):
         if action == 'init':
             presentation_id = int(self.request.get('id'))
             presentation = Presentation.get_by_id(presentation_id)
-            presentation.init = true
+            presentation.init = True
             presentation.put()
             logging.info(presentation_id)
             self.response.out.write(presentation.drive_id)
