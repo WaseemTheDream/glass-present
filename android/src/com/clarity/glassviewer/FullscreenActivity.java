@@ -50,10 +50,12 @@ public class FullscreenActivity extends Activity {
     private Chronometer mChronometer;
     private Slide[] mSlides;
     private ImageView mImageView;
+    private TextView mTextView;
     private ImageView mThumbnailView;
     private int mNumImagesLoaded = 0;
     private int mCurrentSlide = 0;
     private boolean mDisplayPreview = true;
+    private boolean mDisplayNotes = true;
     private String mPresenterID;
     private String mPresentationID;
 
@@ -101,6 +103,7 @@ public class FullscreenActivity extends Activity {
         mThumbnailView = (ImageView) findViewById(R.id.previewThumbnail);
         mChronometer = (Chronometer) findViewById(R.id.timer);
         mChronometer.setVisibility(View.INVISIBLE);
+        mTextView = (TextView) findViewById(R.id.textView);
 
         mGlassGestureListener = new GlassGestureListener();
 
@@ -149,7 +152,17 @@ public class FullscreenActivity extends Activity {
     }
 
     private void renderSlide() {
-        // Relies on mCurrentSlide and mDisplayPreview
+        if (mDisplayNotes) {
+            mTextView.setVisibility(View.VISIBLE);
+            mImageView.setVisibility(View.GONE);
+            mTextView.setText(mSlides[mCurrentSlide].getSpeaker_notes());
+        }
+        else {
+            mTextView.setVisibility(View.GONE);
+            mImageView.setVisibility(View.VISIBLE);
+            mImageView.setImageBitmap(mSlides[mCurrentSlide].getBitmap());
+        }
+
         if (!mDisplayPreview || mCurrentSlide + 1 == mSlides.length) {
             mThumbnailView.setVisibility(View.GONE);
         }
@@ -157,9 +170,6 @@ public class FullscreenActivity extends Activity {
             mThumbnailView.setVisibility(View.VISIBLE);
             mThumbnailView.setImageBitmap(mSlides[mCurrentSlide+1].getBitmap());
         }
-
-        mImageView.setVisibility(View.VISIBLE);
-        mImageView.setImageBitmap(mSlides[mCurrentSlide].getBitmap());
     }
 
     @Override
