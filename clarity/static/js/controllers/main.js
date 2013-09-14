@@ -11,6 +11,7 @@ angular.module('clarityApp')
         method: 'POST',
         data: JSON.stringify(data)
       }).success(function (data, status, headers, config) {
+        console.log(data);
         var presentation_id = data.id;
         var token = data.token;
         $location.path('/slides');
