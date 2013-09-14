@@ -174,13 +174,9 @@ public class FullscreenActivity extends Activity {
     private HttpResponse httpGet(String initURL, List<NameValuePair> nameValuePairs) {
         HttpClient httpclient = new DefaultHttpClient();
         try {
-                String paramString = URLEncodedUtils.format(nameValuePairs, "utf-8");
-                String getURL = initURL + paramString;
-                HttpGet httpGet = new HttpGet(getURL);
-
-
-                HttpResponse response = httpclient.execute(httpGet);
-                return response;
+            HttpGet httpGet = new HttpGet(initURL);
+            HttpResponse response = httpclient.execute(httpGet);
+            return response;
                 // Log.i("RESPONSE", "sigh... " + response.toString());
 
                 // BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -231,11 +227,9 @@ public class FullscreenActivity extends Activity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            String initURL = "http://clarity-uho.appspot.com/api/glass";
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("presenter_id", mPresenterID));
-            nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
-            HttpResponse response = httpGet(initURL, nameValuePairs);
+            String initURL = "http://clarity-uho.appspot.com/api/controller/" +
+                    mPresentationID + "?presenter_id=" + mPresenterID;
+            HttpResponse response = httpGet(initURL);
 
                 // Log.i("RESPONSE", "sigh... " + response.toString());
 
