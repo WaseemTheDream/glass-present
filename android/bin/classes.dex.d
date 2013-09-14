@@ -1,0 +1,26 @@
+/home/matthew/dev/code/clarity/android/bin/classes.dex : \
+/home/matthew/dev/code/clarity/android/bin/classes/R.java.d \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R$menu.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/CameraTestActivity$1.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R$id.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R$dimen.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/BuildConfig.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/GlassGestureListener.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/CameraTestActivity$4.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R$layout.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/FullscreenActivity$DownloadImageTask.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/CameraPreview.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R$drawable.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/CameraTestActivity$3.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/CameraTestActivity$2.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/CameraTestActivity.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/FullscreenActivity$GlassGestureListener.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R$string.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/MainActivity.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/R$attr.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/FullscreenActivity$Foobar.class \
+/home/matthew/dev/code/clarity/android/bin/classes/com/clarity/glassviewer/FullscreenActivity.class \
+/home/matthew/dev/code/clarity/android/bin/dexedLibs/gson-2.2.4-2b150c73da39e9652da2eb37eaa3faed.jar \
+/home/matthew/dev/code/clarity/android/bin/dexedLibs/android-support-v4-ea9b29450c5da285cd59af26eb8e23d3.jar \
+/home/matthew/dev/code/clarity/android/bin/dexedLibs/zbar-ed266f75e1c4a272151801ad60cf0ad4.jar \

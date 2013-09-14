@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0099cc"
+    tools:context=".FullscreenActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="#fff"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/previewThumbnail"
+        android:layout_height="112dp"
+        android:layout_width="150dp"
+        android:background="@drawable/border"
+        android:alpha="0.7"
+        android:layout_gravity="bottom|right"/>
+
+</FrameLayout>
