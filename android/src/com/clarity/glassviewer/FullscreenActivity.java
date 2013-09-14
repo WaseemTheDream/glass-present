@@ -50,8 +50,10 @@ public class FullscreenActivity extends Activity {
     private int mCurrentSlide = 0;
     private boolean mDisplayPreview = true;
     private boolean mDisplayNotes = false;
-    private String mPresenterID = "1caarJn6_ER5UPb_U1i2N56NIj-jy7roR98JtTjc1Oq0";
+    private String mPresenterID = "ab60dc96-dcb8-4e53-afed-fd23c63b4476";
     private String mPresentationID = "5733953138851840";
+    private TextView mSlideNumberView;
+    private View mSlideNumberWrapper;
 
     private boolean imagesLoaded() {
         return mNumImagesLoaded == mSlides.length;
@@ -75,6 +77,9 @@ public class FullscreenActivity extends Activity {
         mChronometer = (Chronometer) findViewById(R.id.timer);
         mChronometer.setVisibility(View.INVISIBLE);
         mTextView = (TextView) findViewById(R.id.textView);
+        mSlideNumberView = (TextView) findViewById(R.id.slideNumber);
+        mSlideNumberWrapper = findViewById(R.id.slideNumWrapper);
+
 
         mGlassGestureListener = new GlassGestureListener();
 
@@ -126,6 +131,9 @@ public class FullscreenActivity extends Activity {
     }
      */
     private void renderSlide() {
+
+        mSlideNumberView.setText(mCurrentSlide + " / " + mSlides.length);
+
 
         if (!mDisplayPreview || mCurrentSlide + 1 == mSlides.length) {
             mThumbnailView.setVisibility(View.GONE);
@@ -181,13 +189,10 @@ public class FullscreenActivity extends Activity {
     private HttpResponse httpGet(String initURL, List<NameValuePair> nameValuePairs) {
         HttpClient httpclient = new DefaultHttpClient();
         try {
-                String paramString = URLEncodedUtils.format(nameValuePairs, "utf-8");
-                String getURL = initURL + "?" + paramString;
-                HttpGet httpGet = new HttpGet(getURL);
 
-
-                HttpResponse response = httpclient.execute(httpGet);
-                return response;
+            HttpGet httpGet = new HttpGet(initURL);
+            HttpResponse response = httpclient.execute(httpGet);
+            return response;
                 // Log.i("RESPONSE", "sigh... " + response.toString());
 
                 // BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -237,43 +242,33 @@ public class FullscreenActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-
+            String initURL = "http://clarity-uho.appspot.com/api/controller/" +
+                    mPresentationID + "?presenter_id=" + mPresenterID;
+            HttpResponse response = httpGet(initURL);
  
-            String initURL = "http://clarity-uho.appspot.com/api/controller";
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("presenter_id", mPresenterID));
-            nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
-            HttpResponse response = httpGet(initURL, nameValuePairs);
-
-         Log.i("RESPONSE", "sigh... " + response.toString());
-
          BufferedReader reader;
          String json;
-		try {
-			reader = new BufferedReader(new InputStreamReader(
-			         response.getEntity().getContent(), "UTF-8"));
-			json = reader.readLine();
-			Log.d("GSON", json);
-	         
-			Gson gson = new Gson();
-	        JsonParser parser = new JsonParser();
-	        JsonObject jsonObject = parser.parse(json).getAsJsonObject();
-	        JsonArray slides = jsonObject.getAsJsonArray("slides");
-	        for (int i = 0; i < slides.size(); i++) {
-	            Slide slide = gson.fromJson(slides.get(i), Slide.class);
-	            Log.d("SLIDES", "Slide = " + slide);
-	        }
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-         // old approach:
-         // Instantiate a JSON object from the request response
-         //JSONArray jsonArray = new JSONArray(json);
+    		try {
+    			reader = new BufferedReader(new InputStreamReader(
+    			         response.getEntity().getContent(), "UTF-8"));
+    			json = reader.readLine();
+    			Log.d("GSON", json);
+    	         
+    			Gson gson = new Gson();
+    	        JsonParser parser = new JsonParser();
+    	        JsonObject jsonObject = parser.parse(json).getAsJsonObject();
+    	        JsonArray slides = jsonObject.getAsJsonArray("slides");
+    	        for (int i = 0; i < slides.size(); i++) {
+    	            Slide slide = gson.fromJson(slides.get(i), Slide.class);
+    	            Log.d("SLIDES", "Slide = " + slide);
+    	        }
+    		} catch (UnsupportedEncodingException e) {
+    			e.printStackTrace();
+    		} catch (IllegalStateException e) {
+    			e.printStackTrace();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
 
             return null;
         }
