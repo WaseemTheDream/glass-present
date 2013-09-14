@@ -87,7 +87,7 @@ class GlassHandler(webapp2.RequestHandler):
 
         elif action == 'change_slide':
             slide = int(self.request.get('slide'))
-            presentation = Presentation.get_by_id(Presentation.ID=presentation_id)
+            presentation = Presentation.get_by_id(presentation_id)
             presentation.slide = slide
             presentation.put()
             # TODO: javascript comm stuff
