@@ -21,9 +21,12 @@ import jinja2
 import json
 import re
 import urllib
-from getmetadata import get_metadata
+import uuid
+
 from google.appengine.api import channel
 from google.appengine.ext import ndb
+
+from getmetadata import get_metadata
 
 MAIN_DIR = os.path.dirname(__file__)
 
@@ -46,31 +49,6 @@ class PresentationHandler(webapp2.RequestHandler):
     Handles create requests of presentations from the browser side.
     """
     parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-_]+)')
-    def put(self):
-        drive_url = json.loads(self.request.body)['driveurl']
-        logging.info("Received the drive url: %s", drive_url)
-
-        match = CreateHandler.parse_url_regex.search(drive_url)
-        drive_id = match.group(1)
-        presentation = Presentation(drive_id=drive_id)
-        presentation_id = presentation.put().id()
-        logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
-        slides = get_metadata(drive_id)
-        slides_str = json.dumps(slides)
-        logging.info(slides_str)
-        presentation.slides = slides_str
-        presentation.put()
-        token = channel.create_channel(str(presentation_id))
-        self.response.write(json.dumps({
-            'id' : str(presentation_id),
-            'driveid' : drive_id,
-            'token': token,
-            'slides' : [
-                {'title': 'Slide 1', 'pageid': 'g103b5c5cc_00'},
-                {'title': 'Slide 2', 'pageid': 'g103b5c5cc_05'},
-                {'title': 'Slide 3', 'pageid': 'g103b5c5e5_00'},
-            ],
-        }));
 
     def post(self):
         drive_url = json.loads(self.request.body)['driveurl']
@@ -86,14 +64,10 @@ class PresentationHandler(webapp2.RequestHandler):
         slides_str = json.dumps(slides)
         logging.info(slides_str)
         presentation.slides = slides_str
-        presentation.put()
+        presentation_id = presentation.put().id()
 
-        token = channel.create_channel(str(presentation_id))
         self.response.write(json.dumps({
-            'id' : str(presentation_id),
-            'driveid' : drive_id,
-            'token': token,
-            'slides' : slides,
+            'presentation_id': str(presentation_id),
         }));
 
     def get(self, drive_id):
@@ -101,10 +75,18 @@ class PresentationHandler(webapp2.RequestHandler):
             Presentation.query(Presentation.drive_id == drive_id).get()
         if not presentation:
             self.abort(404)
+
+        presentation_id = presentation.id()
+        presenter_id = uuid.uuid4()
+
+        token = channel.create_channel(str(presentation_id) + str(presenter_id))
+
         slides_decoded = json.loads(presentation.slides)
         out = {
-            "drive_id": presentation.drive_id,
-            "slides": slides_decoded
+            'presentation_id': str(presentation_id),
+            'presenter_id': presenter_id,
+            "slides": slides_decoded,
+            "token": token,
         }
         self.response.write(json.dumps(out))
 
