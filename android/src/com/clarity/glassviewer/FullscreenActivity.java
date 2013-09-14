@@ -80,9 +80,7 @@ public class FullscreenActivity extends Activity {
             new DownloadImageTask(i).execute(mSlides[i].getImg_url());
         }
 
-
         Log.d("FullscreenActivity", "onCreate complete");
-
     }
     
     private String getServerPayload() throws Exception {
