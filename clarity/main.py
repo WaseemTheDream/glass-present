@@ -18,6 +18,7 @@ import logging
 import webapp2
 import os
 import jinja2
+import json
 import re
 import urllib
 from google.appengine.ext import ndb
@@ -45,18 +46,18 @@ class CreateHandler(webapp2.RequestHandler):
     """
     parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-]+)')
     def post(self):
-        drive_url = self.request.get('driveurl')
+        drive_url = json.loads(self.request.body)['driveurl']
         logging.info("Received the drive url: %s", drive_url)
         match = CreateHandler.parse_url_regex.search(drive_url)
         drive_id = match.group(1)
         presentation = Presentation(drive_id = drive_id)
         presentation_id = presentation.put().id()
         logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
-        qstring = urllib.urlencode({
+        out = {
             'id' : presentation_id,
             'driveid' : drive_id,
-        })
-        self.redirect('/present/view?' + qstring)
+        }
+        self.response.write(json.dumps(out))
 
 class ViewHandler(webapp2.RequestHandler):
     """
