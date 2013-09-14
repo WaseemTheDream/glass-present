@@ -31,7 +31,7 @@ JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(MAIN_DIR))
 
 class Presentation(ndb.Model):
     drive_id = ndb.StringProperty()
-    slides = ndb.StringProperty()
+    slides = ndb.TextProperty()
 
 class MainHandler(webapp2.RequestHandler):
     """
