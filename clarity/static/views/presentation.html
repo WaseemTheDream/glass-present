@@ -1,12 +1,18 @@
-<button id="test">Test</button>
-
-<div id="qr-code">
-  <img src="static/images/QR-code.jpg">
+<div id="slide-container" ng-show="currentSlide">
+  <img src="{{ currentSlide.img_url }}">
 </div>
 
-<div id="slide-container" style="display: none;">
-  <img src="static/images/slide.jpg">
-</div>
+<button 
+  class="btn btn-primary"
+  ng-click="previousSlide()">
+  Previous Slide
+</button>
+
+<button 
+  class="btn btn-primary"
+  ng-click="nextSlide()">
+  Next Slide
+</button>
 
 <script>
   $('#test').click(function() {

@@ -70,14 +70,12 @@ class PresentationHandler(webapp2.RequestHandler):
             'presentation_id': str(presentation_id),
         }));
 
-    def get(self, drive_id):
-        presentation = \
-            Presentation.query(Presentation.drive_id == drive_id).get()
+    def get(self, presentation_id):
+        presentation = Presentation.get_by_id(int(presentation_id))
         if not presentation:
             self.abort(404)
 
-        presentation_id = presentation.id()
-        presenter_id = uuid.uuid4()
+        presenter_id = str(uuid.uuid4())
 
         token = channel.create_channel(make_channel_name(
             presentation_id=presentation_id,
@@ -143,8 +141,8 @@ class GlassHandler(webapp2.RequestHandler):
             self.response.out.write(presentation.drive_id)
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler),
-    # ('/api/presentation', PresentationHandler),
-    ('/api/presentation/<drive_id>', PresentationHandler),
-    ('/api/glass', GlassHandler),
+    webapp2.Route('/', MainHandler),
+    webapp2.Route('/api/presentation', PresentationHandler),
+    webapp2.Route('/api/presentation/<presentation_id:\d+>', PresentationHandler),
+    webapp2.Route('/api/glass', GlassHandler),
 ], debug=True)
