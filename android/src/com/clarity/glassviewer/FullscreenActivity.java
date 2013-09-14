@@ -186,7 +186,7 @@ public class FullscreenActivity extends Activity {
         return null;
     }
 
-    private HttpResponse httpGet(String initURL, List<NameValuePair> nameValuePairs) {
+    private HttpResponse httpGet(String initURL) {
         HttpClient httpclient = new DefaultHttpClient();
         try {
 
@@ -236,8 +236,10 @@ public class FullscreenActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mChronometer.setVisibility(View.VISIBLE);
-            mChronometer.start();
+            
+            for (int i = 0; i < mSlides.length; i++) {
+            	new DownloadImageTask(i).execute(mSlides[i].getImg_url());
+            }
         }
 
         @Override
@@ -258,9 +260,10 @@ public class FullscreenActivity extends Activity {
     	        JsonParser parser = new JsonParser();
     	        JsonObject jsonObject = parser.parse(json).getAsJsonObject();
     	        JsonArray slides = jsonObject.getAsJsonArray("slides");
+    	        mSlides = new Slide[slides.size()];
     	        for (int i = 0; i < slides.size(); i++) {
-    	            Slide slide = gson.fromJson(slides.get(i), Slide.class);
-    	            Log.d("SLIDES", "Slide = " + slide);
+    	            mSlides[i] = gson.fromJson(slides.get(i), Slide.class);
+    	            Log.d("SLIDES", "Slide = " + mSlides[i]);
     	        }
     		} catch (UnsupportedEncodingException e) {
     			e.printStackTrace();
@@ -302,6 +305,8 @@ public class FullscreenActivity extends Activity {
             if (imagesLoaded()) {
                 Log.i("Async", "findme: Finished loading all images.");
                 goToSlide(0);
+                mChronometer.setVisibility(View.VISIBLE);
+                mChronometer.start();
             }
         }
     }
