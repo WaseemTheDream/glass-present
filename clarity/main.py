@@ -18,11 +18,17 @@ import logging
 import webapp2
 import os
 import jinja2
+import re
+import urllib
+from google.appengine.ext import ndb
 
 MAIN_DIR = os.path.dirname(__file__)
 PAGES_DIR = os.path.join(MAIN_DIR, 'pages')
 
 JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(PAGES_DIR))
+
+class Presentation(ndb.Model):
+    drive_id = ndb.StringProperty()
 
 class MainHandler(webapp2.RequestHandler):
     """
@@ -36,12 +42,43 @@ class CreateHandler(webapp2.RequestHandler):
     """
     Handles create requests of presentations from the browser side.
     """
+    parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-]+)')
     def post(self):
         drive_url = self.request.get('driveurl')
         logging.info("Received the drive url: %s", drive_url)
+        match = CreateHandler.parse_url_regex.search(drive_url)
+        drive_id = match.group(1)
+        presentation = Presentation(drive_id = drive_id)
+        presentation_id = presentation.put().id()
+        logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
+        qstring = urllib.urlencode({
+            'id' : presentation_id,
+            'driveid' : drive_id,
+        })
+        self.redirect('/view?' + qstring)
 
+class ViewHandler(webapp2.RequestHandler):
+    """
+    Shows the web view of the presentation (mainly JS)
+    """
+    def get(self):
+        drive_id = self.request.get('driveid')
+        presentation_id = int(self.request.get('id'))
+        self.response.out.write('Should show doc presentation %s (id %d)' % (drive_id, presentation_id))
+
+class GlassHandler(webapp2.RequestHandler):
+    """
+    Handles glass queries and commands
+    """
+    def get(self):
+        pass
+
+    def post(self):
+        pass
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/create', CreateHandler)
+    ('/create', CreateHandler),
+    ('/view', ViewHandler),
+    ('/glass', GlassHandler),
 ], debug=True)
