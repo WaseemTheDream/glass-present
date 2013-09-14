@@ -40,8 +40,8 @@ public class FullscreenActivity extends Activity {
     private int mCurrentSlide = 0;
     private boolean mDisplayPreview = true;
     private boolean mDisplayNotes = false;
-    private String mPresenterID;
-    private String mPresentationID;
+    private String mPresenterID = "ab60dc96-dcb8-4e53-afed-fd23c63b4476";
+    private String mPresentationID = "5733953138851840";
     private TextView mSlideNumberView;
     private View mSlideNumberWrapper;
 
@@ -231,13 +231,17 @@ public class FullscreenActivity extends Activity {
                     mPresentationID + "?presenter_id=" + mPresenterID;
             HttpResponse response = httpGet(initURL);
 
-                // Log.i("RESPONSE", "sigh... " + response.toString());
+            Log.i("RESPONSE", "sigh... " + response.toString());
 
-                // BufferedReader reader = new BufferedReader(new InputStreamReader(
-                //         response.getEntity().getContent(), "UTF-8"));
-                // String json = reader.readLine();
-                // // Instantiate a JSON object from the request response
-                // JSONArray jsonArray = new JSONArray(json);
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(
+                        response.getEntity().getContent(), "UTF-8"));
+                String json = reader.readLine();
+                Log.i("RESPONSE", "findme: " + json);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             return null;
         }
