@@ -42,6 +42,8 @@ public class FullscreenActivity extends Activity {
     private boolean mDisplayNotes = false;
     private String mPresenterID;
     private String mPresentationID;
+    private TextView mSlideNumberView;
+    private View mSlideNumberWrapper;
 
     private boolean imagesLoaded() {
         return mNumImagesLoaded == mSlides.length;
@@ -65,6 +67,9 @@ public class FullscreenActivity extends Activity {
         mChronometer = (Chronometer) findViewById(R.id.timer);
         mChronometer.setVisibility(View.INVISIBLE);
         mTextView = (TextView) findViewById(R.id.textView);
+        mSlideNumberView = (TextView) findViewById(R.id.slideNumber);
+        mSlideNumberWrapper = findViewById(R.id.slideNumWrapper);
+
 
         mGlassGestureListener = new GlassGestureListener();
 
@@ -111,6 +116,9 @@ public class FullscreenActivity extends Activity {
     }
 
     private void renderSlide() {
+
+        mSlideNumberView.setText(mCurrentSlide + " / " + mSlides.length);
+
 
         if (!mDisplayPreview || mCurrentSlide + 1 == mSlides.length) {
             mThumbnailView.setVisibility(View.GONE);
