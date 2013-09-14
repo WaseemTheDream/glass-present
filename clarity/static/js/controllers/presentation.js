@@ -60,6 +60,16 @@ angular.module('clarityApp')
       });
     }
 
+    $scope.connectRoundtrip = function () {
+      $.ajax({
+        url: '/api/controller/' + $scope.presentationId + "?presenter_id=" + $scope.presenterId,
+        type: 'GET',
+        success: function (data) {
+          console.log(data);
+        }
+      });
+    };
+
     $scope.fullScreen = function () {
       if (screenfull.enabled) {
         screenfull.request($('#slide-container img').get(0));
@@ -79,7 +89,7 @@ angular.module('clarityApp')
           // Hide the QR code and show the slide if not connected yet
           if (!connected) {
             $('#qr-container').fadeOut('fast', function() {
-              $('#full-screen').click();
+              $("#play-button").fadeIn('slow');
             });
             connected = true;
           }
