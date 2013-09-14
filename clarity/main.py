@@ -112,8 +112,16 @@ class ControllerHandler(webapp2.RequestHandler):
         presentation = Presentation.get_by_id(int(presentation_id))
         if not presentation:
             self.abort(404)
+        presenter_id = self.request.get('presenter_id')
 
         slides_decoded = json.loads(presentation.slides)
+
+        channel.send_message(make_channel_name(
+            presentation_id=presentation_id,
+            presenter_id=presenter_id,
+        ), json.dumps({
+            'event': 'glass connected',
+        }))
         out = {
             'presentation_id': str(presentation_id),
             'slides': slides_decoded
@@ -135,9 +143,9 @@ class ControllerHandler(webapp2.RequestHandler):
             presentation_id=presentation_id,
             presenter_id=presenter_id,
         ), json.dumps({
-                'page_id': page_id,
-            })
-        )
+            'event': 'slide changed',
+            'page_id': page_id,
+        }))
 
         self.response.out.write(presentation.drive_id)
 

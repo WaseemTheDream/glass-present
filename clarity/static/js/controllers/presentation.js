@@ -67,11 +67,24 @@ angular.module('clarityApp')
       onmessage: function (message) {
         console.log('received channel message');
         var data = JSON.parse(message.data)
-        if ($scope.pageIdToSlide[data.page_id]) {
-          console.log('Changing slide to page_id ' + data.page_id);
-          $scope.currentSlide = $scope.pageIdToSlide[data.page_id];
-          $scope.$apply()
+
+        if (data.event === 'glass connected') {
+          // Hide the QR code and show the slide
+          console.log(data);
+
+        } else if (data.event === 'slide changed') {
+          if ($scope.pageIdToSlide[data.page_id]) {
+            console.log('Changing slide to page_id ' + data.page_id);
+            $scope.currentSlide = $scope.pageIdToSlide[data.page_id];
+            $scope.$apply()
+          } else {
+            console.log('Invalid page_id ' + data.page_id + ' was sent.');
+          }
+
+        } else {
+          console.log('Invalid event type');
         }
+
       },
       onerror: function () {
         alert('onError');
