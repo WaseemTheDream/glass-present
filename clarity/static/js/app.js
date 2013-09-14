@@ -11,6 +11,10 @@ angular.module('clarityApp', [])
 				templateUrl: 'static/views/present.html',
 				controller: 'PresentCtrl'
 			})
+      .when('/slides', {
+        templateUrl: 'static/views/slides.html',
+        controller: 'SlideCtrl'
+      })
 			.otherwise({
 				redirectTo: '/'
 			});
