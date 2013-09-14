@@ -88,7 +88,12 @@ angular.module('clarityApp')
         if (data.event === 'glass connected') {
           // Hide the QR code and show the slide if not connected yet
           if (!connected) {
-            $('#qr-container').fadeOut('fast', function() {
+            $('#qr-container').fadeTo('fast', 0, function() {
+              var $play_button = $('#play-button');
+              var $parent = $play_button.parent();
+              $play_button.css('position', 'absolute');
+              $play_button.css('top', '8em');
+
               $("#play-button").fadeIn('slow');
             });
             connected = true;

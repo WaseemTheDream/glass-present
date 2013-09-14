@@ -6,3 +6,11 @@
 #slide-container:-ms-full-screen     img { height: 100%; }
 #slide-container:-o-full-screen      img { height: 100%; }
 #slide-container:full-screen         img { height: 100%; }
+
+.margin-fix {
+  margin-bottom: 1em;
+}
+
+#play-button {
+  display: none;
+}
