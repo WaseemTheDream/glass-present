@@ -79,7 +79,10 @@ class PresentationHandler(webapp2.RequestHandler):
         presentation_id = presentation.id()
         presenter_id = uuid.uuid4()
 
-        token = channel.create_channel(str(presentation_id) + str(presenter_id))
+        token = channel.create_channel(make_channel_name(
+            presentation_id=presentation_id,
+            presenter_id=presenter_id,
+        ))
 
         slides_decoded = json.loads(presentation.slides)
         out = {
@@ -98,6 +101,10 @@ class PresentationHandler(webapp2.RequestHandler):
         return drive_id
 
 
+def make_channel_name(presentation_id=None, presenter_id=None):
+    return str(presentation_id) + str(presenter_id)
+
+
 class GlassHandler(webapp2.RequestHandler):
     """
     Handles glass queries and commands
@@ -113,9 +120,10 @@ class GlassHandler(webapp2.RequestHandler):
             logging.info(presentation_id)
 
             # Send message to browser client
-            channel.send_message(str(presentation_id),
-                json.dumps({'status': 'connected'})
-            )
+            channel.send_message(make_channel_name(
+                presentation_id=presentation_id,
+                presenter_id=presenter_id,
+            ), json.dumps({'status': 'connected'}))
 
             self.response.out.write(presentation.slides)
 
@@ -123,8 +131,10 @@ class GlassHandler(webapp2.RequestHandler):
             slide = int(self.request.get('slide'))
             presentation = Presentation.get_by_id(presentation_id)
 
-            channel.send_message(str(presentation_id),
-                json.dumps({
+            channel.send_message(make_channel_name(
+                presentation_id=presentation_id,
+                presenter_id=presenter_id,
+            ), json.dumps({
                     'status': 'slide changed',
                     'slide': slide,
                 })
