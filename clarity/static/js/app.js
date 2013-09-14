@@ -4,10 +4,10 @@ angular.module('clarityApp', [])
 	.config(function ($routeProvider) {
 		$routeProvider
 			.when('/', {
-				templateUrl: 'static/views/select-presentation.html',
+				templateUrl: 'static/views/main.html',
 				controller: 'MainCtrl'
 			})
-			.when('/presentation', {
+			.when('/presentation/:presentationId', {
 				templateUrl: 'static/views/presentation.html',
 				controller: 'PresentationCtrl'
 			})

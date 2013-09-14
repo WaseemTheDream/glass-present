@@ -134,7 +134,7 @@ class GlassHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/api/presentation', PresentationHandler),
+    # ('/api/presentation', PresentationHandler),
     ('/api/presentation/<drive_id>', PresentationHandler),
     ('/api/glass', GlassHandler),
 ], debug=True)
