@@ -1,8 +1,10 @@
 package com.clarity.glassviewer;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -43,8 +50,8 @@ public class FullscreenActivity extends Activity {
     private int mCurrentSlide = 0;
     private boolean mDisplayPreview = true;
     private boolean mDisplayNotes = false;
-    private String mPresenterID;
-    private String mPresentationID;
+    private String mPresenterID = "1caarJn6_ER5UPb_U1i2N56NIj-jy7roR98JtTjc1Oq0";
+    private String mPresentationID = "5733953138851840";
 
     private boolean imagesLoaded() {
         return mNumImagesLoaded == mSlides.length;
@@ -90,7 +97,7 @@ public class FullscreenActivity extends Activity {
 
         Log.d("FullscreenActivity", "onCreate complete");
     }
-    
+    /*
     private String getServerPayload() throws Exception {
 		String url = "http://www.google.com/search?q=developer";
 		 
@@ -117,7 +124,7 @@ public class FullscreenActivity extends Activity {
  
 		return result.toString();
     }
-
+     */
     private void renderSlide() {
 
         if (!mDisplayPreview || mCurrentSlide + 1 == mSlides.length) {
@@ -175,7 +182,7 @@ public class FullscreenActivity extends Activity {
         HttpClient httpclient = new DefaultHttpClient();
         try {
                 String paramString = URLEncodedUtils.format(nameValuePairs, "utf-8");
-                String getURL = initURL + paramString;
+                String getURL = initURL + "?" + paramString;
                 HttpGet httpGet = new HttpGet(getURL);
 
 
@@ -231,19 +238,42 @@ public class FullscreenActivity extends Activity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            String initURL = "http://clarity-uho.appspot.com/api/glass";
+ 
+            String initURL = "http://clarity-uho.appspot.com/api/controller";
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("presenter_id", mPresenterID));
             nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
             HttpResponse response = httpGet(initURL, nameValuePairs);
 
-                // Log.i("RESPONSE", "sigh... " + response.toString());
+         Log.i("RESPONSE", "sigh... " + response.toString());
 
-                // BufferedReader reader = new BufferedReader(new InputStreamReader(
-                //         response.getEntity().getContent(), "UTF-8"));
-                // String json = reader.readLine();
-                // // Instantiate a JSON object from the request response
-                // JSONArray jsonArray = new JSONArray(json);
+         BufferedReader reader;
+         String json;
+		try {
+			reader = new BufferedReader(new InputStreamReader(
+			         response.getEntity().getContent(), "UTF-8"));
+			json = reader.readLine();
+			Log.d("GSON", json);
+	         
+			Gson gson = new Gson();
+	        JsonParser parser = new JsonParser();
+	        JsonObject jsonObject = parser.parse(json).getAsJsonObject();
+	        JsonArray slides = jsonObject.getAsJsonArray("slides");
+	        for (int i = 0; i < slides.size(); i++) {
+	            Slide slide = gson.fromJson(slides.get(i), Slide.class);
+	            Log.d("SLIDES", "Slide = " + slide);
+	        }
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+         // old approach:
+         // Instantiate a JSON object from the request response
+         //JSONArray jsonArray = new JSONArray(json);
 
             return null;
         }
