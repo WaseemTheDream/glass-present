@@ -89,6 +89,7 @@ class PresentationHandler(webapp2.RequestHandler):
             "slides": slides_decoded,
             "token": token,
         }
+        logging.info('%d %s' % (presentation_id, presenter_id))
         self.response.write(json.dumps(out))
 
     @staticmethod
