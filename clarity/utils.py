@@ -2,11 +2,13 @@ import urllib2, logging, re
 
 from HTMLParser import HTMLParser
 
-regex1 = re.compile(r'background: url\((.+)\);')
-
 class GDParser(HTMLParser):
-    def __init__ (self):
-        self.urls = []
+    pageidregex = re.compile(r'pageid=(.+?)&')
+    regex1 = re.compile(r'background: url\((.+)\);')
+    def __init__ (self, driveid):
+        self.driveid = driveid
+        self.pageids = []
+        self.imgurls = []
         self.notes = []
         self.noteson = False
         self.reset()
@@ -15,8 +17,11 @@ class GDParser(HTMLParser):
         if tag == 'section':
             if attrs.get('class', '') == 'slide-content':
                 stylestr = attrs['style']
-                url = HTMLParser().unescape(regex1.search(stylestr).group(1))
-                self.urls.append(url)
+                url = HTMLParser().unescape(GDParser.regex1.search(stylestr).group(1))
+                pageid = GDParser.pageidregex.search(url).group(1)
+                imgurl = 'https://docs.google.com/presentation/d/%s/export/png?id=%s&pageid=%s' % (self.driveid, self.driveid, pageid)
+                self.pageids.append(pageid)
+                self.imgurls.append(imgurl)
                 self.notes.append('')
                 self.noteson = False
             if attrs.get('class', '') == 'slide-notes':
@@ -29,8 +34,8 @@ class GDParser(HTMLParser):
             self.notes[-1] += HTMLParser().unescape(data) + ' '
     def get_slides(self):
         ret = []
-        for i in range(len(self.urls)):
-            ret.append({'driveurl': self.urls[i], 'speaker_notes': self.notes[i]})
+        for i in range(len(self.pageids)):
+            ret.append({'img_url': self.imgurls[i], 'page_id': self.pageids[i], 'speaker_notes': self.notes[i]})
         return ret
 
 def get_metadata (drive_id):
@@ -41,7 +46,7 @@ def get_metadata (drive_id):
     html_str = infile.read().splitlines()[-1]
     infile.close()
     logging.info(html_str)
-    parser = GDParser()
+    parser = GDParser(drive_id)
     parser.feed(html_str)
     slides = parser.get_slides()
     return slides

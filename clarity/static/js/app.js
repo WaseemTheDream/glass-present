@@ -4,17 +4,13 @@ angular.module('clarityApp', [])
 	.config(function ($routeProvider) {
 		$routeProvider
 			.when('/', {
-				templateUrl: 'static/views/select-presentation.html',
+				templateUrl: 'static/views/main.html',
 				controller: 'MainCtrl'
 			})
-			.when('/present', {
-				templateUrl: 'static/views/present.html',
-				controller: 'PresentCtrl'
+			.when('/presentation/:presentationId', {
+				templateUrl: 'static/views/presentation.html',
+				controller: 'PresentationCtrl'
 			})
-      .when('/slides', {
-        templateUrl: 'static/views/slides.html',
-        controller: 'SlideCtrl'
-      })
 			.otherwise({
 				redirectTo: '/'
 			});

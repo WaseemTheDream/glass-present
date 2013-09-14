@@ -21,9 +21,12 @@ import jinja2
 import json
 import re
 import urllib
-from getmetadata import get_metadata
+import uuid
+
 from google.appengine.api import channel
 from google.appengine.ext import ndb
+
+from utils import get_metadata
 
 MAIN_DIR = os.path.dirname(__file__)
 
@@ -31,8 +34,7 @@ JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(MAIN_DIR))
 
 class Presentation(ndb.Model):
     drive_id = ndb.StringProperty()
-    init = ndb.BooleanProperty(default=False)
-    slide = ndb.IntegerProperty(default=1)
+    slides = ndb.TextProperty()
 
 class MainHandler(webapp2.RequestHandler):
     """
@@ -42,33 +44,116 @@ class MainHandler(webapp2.RequestHandler):
         template = JINJA_ENV.get_template('index.html')
         self.response.out.write(template.render({}))
 
-class CreateHandler(webapp2.RequestHandler):
+class PresentationHandler(webapp2.RequestHandler):
     """
     Handles create requests of presentations from the browser side.
     """
     parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-_]+)')
+
     def post(self):
         drive_url = json.loads(self.request.body)['driveurl']
         logging.info("Received the drive url: %s", drive_url)
-        match = CreateHandler.parse_url_regex.search(drive_url)
-        drive_id = match.group(1)
-        presentation = Presentation(drive_id = drive_id)
-        presentation_id = presentation.put().id()
-        logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
+        drive_id = self.parse_url(drive_url)
+
+        presentation = \
+            Presentation.query(Presentation.drive_id == drive_id).get()
+        if presentation is None:
+            presentation = Presentation(drive_id=drive_id)
+
         slides = get_metadata(drive_id)
-        token = channel.create_channel(str(presentation_id))
+        slides_str = json.dumps(slides)
+        logging.info(slides_str)
+        presentation.slides = slides_str
+        presentation_id = presentation.put().id()
+
         self.response.write(json.dumps({
-            'id' : str(presentation_id),
-            'driveid' : drive_id,
-            'token': token,
-            'slides' : [
-                {'title': 'Slide 1', 'pageid': 'g103b5c5cc_00'},
-                {'title': 'Slide 2', 'pageid': 'g103b5c5cc_05'},
-                {'title': 'Slide 3', 'pageid': 'g103b5c5e5_00'},
-            ],
+            'presentation_id': str(presentation_id),
         }));
 
+    def get(self, presentation_id):
+        presentation = Presentation.get_by_id(int(presentation_id))
+        if not presentation:
+            self.abort(404)
 
+        presenter_id = str(uuid.uuid4())
+
+        token = channel.create_channel(make_channel_name(
+            presentation_id=presentation_id,
+            presenter_id=presenter_id,
+        ))
+
+        slides_decoded = json.loads(presentation.slides)
+        out = {
+            'presentation_id': str(presentation_id),
+            'presenter_id': presenter_id,
+            "slides": slides_decoded,
+            "token": token,
+        }
+        self.response.write(json.dumps(out))
+
+    @staticmethod
+    def parse_url(url):
+        parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-_]+)')
+        match = parse_url_regex.search(url)
+        drive_id = match.group(1)
+        return drive_id
+
+
+def make_channel_name(presentation_id=None, presenter_id=None):
+    return str(presentation_id) + str(presenter_id)
+
+
+class ControllerHandler(webapp2.RequestHandler):
+    """
+    Handles remote control queries and commands
+    """
+
+    def get(self, presentation_id):
+        presentation = Presentation.get_by_id(int(presentation_id))
+        if not presentation:
+            self.abort(404)
+
+        slides_decoded = json.loads(presentation.slides)
+        out = {
+            'presentation_id': str(presentation_id),
+            'slides': slides_decoded
+        }
+        self.response.write(json.dumps(out))
+
+    def post(self):
+        page_id = self.request.get('page_id')
+        presentation_id = self.request.get('presentation_id')
+        presenter_id = self.request.get('presenter_id')
+        logging.info('presentation_id: %s', presentation_id)
+        logging.info('presenter_id: %s', presenter_id)
+        presentation = Presentation.get_by_id(int(presentation_id))
+        logging.info(presentation)
+        if not presentation:
+            self.abort(404)
+
+        channel.send_message(make_channel_name(
+            presentation_id=presentation_id,
+            presenter_id=presenter_id,
+        ), json.dumps({
+                'page_id': page_id,
+            })
+        )
+
+        self.response.out.write(presentation.drive_id)
+
+
+
+app = webapp2.WSGIApplication([
+    webapp2.Route('/', MainHandler),
+    webapp2.Route('/api/presentation', PresentationHandler),
+    webapp2.Route('/api/presentation/<presentation_id:\d+>', PresentationHandler),
+    webapp2.Route('/api/controller', ControllerHandler),
+    webapp2.Route('/api/controller/<presentation_id:\d+>', ControllerHandler),
+], debug=True)
+
+
+
+# Legacy code
 class GlassHandler(webapp2.RequestHandler):
     """
     Handles glass queries and commands
@@ -81,34 +166,27 @@ class GlassHandler(webapp2.RequestHandler):
         if action == 'init':
             presentation_id = int(self.request.get('id'))
             presentation = Presentation.get_by_id(presentation_id)
-            presentation.init = True
-            presentation.put()
             logging.info(presentation_id)
 
             # Send message to browser client
-            channel.send_message(str(presentation_id),
-                json.dumps({'status': 'connected'})
-            )
+            channel.send_message(make_channel_name(
+                presentation_id=presentation_id,
+                presenter_id=presenter_id,
+            ), json.dumps({'status': 'connected'}))
 
-            self.response.out.write(presentation.drive_id)
+            self.response.out.write(presentation.slides)
 
         elif action == 'change_slide':
             slide = int(self.request.get('slide'))
             presentation = Presentation.get_by_id(presentation_id)
-            presentation.slide = slide
-            presentation.put()
 
-            channel.send_message(str(presentation_id),
-                json.dumps({
+            channel.send_message(make_channel_name(
+                presentation_id=presentation_id,
+                presenter_id=presenter_id,
+            ), json.dumps({
                     'status': 'slide changed',
                     'slide': slide,
                 })
             )
 
             self.response.out.write(presentation.drive_id)
-
-app = webapp2.WSGIApplication([
-    ('/', MainHandler),
-    ('/api/create', CreateHandler),
-    ('/api/glass', GlassHandler),
-], debug=True)
