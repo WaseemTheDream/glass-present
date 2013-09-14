@@ -20,16 +20,15 @@ import os
 import jinja2
 
 MAIN_DIR = os.path.dirname(__file__)
-PAGES_DIR = os.path.join(MAIN_DIR, 'pages')
 
-JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(PAGES_DIR))
+JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(MAIN_DIR))
 
 class MainHandler(webapp2.RequestHandler):
     """
     Serves the main app.
     """
     def get(self):
-        template = JINJA_ENV.get_template('main.html')
+        template = JINJA_ENV.get_template('index.html')
         self.response.out.write(template.render({}))
 
 class CreateHandler(webapp2.RequestHandler):
