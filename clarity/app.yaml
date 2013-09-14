@@ -19,6 +19,10 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /static/css/fonts/glyphicons-halflings-regular.woff
+  static_files: static/css/fonts/glyphicons-halflings-regular.woff
+  upload: application/font-woff
+
 - url: /static
   static_dir: static
 

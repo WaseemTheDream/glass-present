@@ -1,38 +1,51 @@
 <div class="row">
-  <div id="qr-container" class="col-md-7" ng-show="presentationId && presenterId">
-    <img src="http://chart.apis.google.com/chart?cht=qr&chs=500x500&chl={{presentationId}}|{{presenterId}}&chld=H|0"
-    alt="QR code" class="img-responsive">
+  <!-- container -->
+  <div class="col-md-6">
+    <div id="qr-container" ng-show="presentationId && presenterId">
+      <img src="http://chart.apis.google.com/chart?cht=qr&chs=500x500&chl={{presentationId}}|{{presenterId}}&chld=H|0"
+      alt="QR code" class="img-responsive">
+    </div>
+
+    <button id="play-button"
+      class="btn btn-primary btn-lg" ng-click="fullScreen()" style="display: none;">
+      <span class="glyphicon glyphicon-play"></span> Start presentation
+    </button>
   </div>
 
-  <div id="slide-container" class="col-md-5" ng-show="currentSlide">
+  <div id="slide-container" class="col-md-6" ng-show="currentSlide">
     <img src="{{ currentSlide.img_url }}" alt="Current slide"
       class="img-responsive">
   </div>
 </div>
 
-<button
-  class="btn btn-primary"
-  ng-click="previousSlide()">
-  Previous Slide
-</button>
+<div class="row">
+  <button
+    class="btn btn-default"
+    ng-click="previousSlide()">
+    Previous Slide
+  </button>
 
-<button 
-  class="btn btn-primary"
-  ng-click="nextSlide()">
-  Next Slide
-</button>
+  <button
+    class="btn btn-default"
+    ng-click="nextSlide()">
+    Next Slide
+  </button>
 
-<button class="btn btn-default" ng-click="fullScreen()">Full screen</button>
-
-<input
-  ng-model="pageId"
-  required>
-</input>
-<button
-  class="btn btn-primary"
-  ng-click="controllerRoundtrip()">
-  Do Controller Roundtrip
-</button>
+  <input
+    ng-model="pageId"
+    required>
+  </input>
+  <button
+    class="btn btn-primary"
+    ng-click="controllerRoundtrip()">
+    Do Controller Roundtrip
+  </button>
+  <button
+    class="btn btn-primary"
+    ng-click="connectRoundtrip()">
+    Do Connection Roundtrip
+  </button>
+</div>
 
 <script>
   document.addEventListener(screenfull.raw.fullscreenchange, function() {
