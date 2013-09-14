@@ -60,6 +60,13 @@ angular.module('clarityApp')
       });
     }
 
+    $scope.fullScreen = function () {
+      if (screenfull.enabled) {
+        screenfull.request($('#slide-container img').get(0));
+      }
+    };
+
+    var connected = false;
     $scope.channel = {
       onopen: function () {
         console.log('channel connection established');
@@ -69,8 +76,13 @@ angular.module('clarityApp')
         var data = JSON.parse(message.data)
 
         if (data.event === 'glass connected') {
-          // Hide the QR code and show the slide
-          console.log(data);
+          // Hide the QR code and show the slide if not connected yet
+          if (!connected) {
+            $('#qr-container').fadeOut('fast', function() {
+              $('#full-screen').click();
+            });
+            connected = true;
+          }
 
         } else if (data.event === 'slide changed') {
           if ($scope.pageIdToSlide[data.page_id]) {
