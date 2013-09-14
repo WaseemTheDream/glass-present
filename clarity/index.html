@@ -11,11 +11,12 @@
 
     <!-- Bootstrap core CSS -->
     <link href="static/css/assets/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="static/css/assets/bootstrap-theme.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="static/css/assets/theme.css" rel="stylesheet">
+
+    <!-- Custom styles (not theme-specific) -->
+    <link href="static/css/main.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -44,10 +45,8 @@
       </div>
     </div>-->
 
-    <div class="container">
-      <div class="row" ng-view="">
-        <!-- Page View Goes Here -->
-      </div>
+    <div ng-view="">
+      <!-- Page View Goes Here -->
     </div>
 
 
@@ -57,6 +56,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
     <!-- <script src="static/js/assets/jquery.js"></script> -->
+    <script src="static/js/assets/screenfull.min.js"></script>
     <script src="static/js/assets/bootstrap.min.js"></script>
     <script src="_ah/channel/jsapi"></script>
     <script src="static/js/assets/holder.js"></script>
