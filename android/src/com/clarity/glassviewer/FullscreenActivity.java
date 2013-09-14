@@ -4,12 +4,17 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -20,11 +25,9 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.ImageView;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
+import android.widget.TextView;
 
 public class FullscreenActivity extends Activity {
 	private static final String USER_AGENT = "Mozilla/5.0";
@@ -70,15 +73,20 @@ public class FullscreenActivity extends Activity {
 
         mGestureDetector = new GestureDetector(this, mGlassGestureListener);
 
+        /*
         mSlides = new Slide[]{
             new Slide("hi this is notes 1111", "a", "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png"),
             new Slide("hi I am looking at notes 2222!", "a", "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png"),
             new Slide("hi. I'm lazy.", "a", "http://images.wikia.com/mariofanon/images/c/c9/Toad.png"),
-        };
+        };*/
 
+        /*
         for (int i = 0; i < mSlides.length; i++) {
             new DownloadImageTask(i).execute(mSlides[i].getImg_url());
         }
+        */
+        
+        new StartPresentationTask().execute();
 
 
         Log.d("FullscreenActivity", "onCreate complete");
