@@ -41,7 +41,7 @@ class MainHandler(webapp2.RequestHandler):
         template = JINJA_ENV.get_template('index.html')
         self.response.out.write(template.render({}))
 
-class CreateHandler(webapp2.RequestHandler):
+class PresentationHandler(webapp2.RequestHandler):
     """
     Handles create requests of presentations from the browser side.
     """
@@ -70,6 +70,35 @@ class CreateHandler(webapp2.RequestHandler):
                 {'title': 'Slide 3', 'pageid': 'g103b5c5e5_00'},
             ],
         }));
+
+    def put(self):
+        drive_url = json.loads(self.request.body)['drive_url']
+        logging.info("Received the drive url: %s", drive_url)
+
+        drive_id = self.parse_url(drive_url)
+        presentation = 
+            Presentation.query(Presentation.drive_id == drive_id).get()
+
+        # If presentation already exists, update it. Otherwise create a new one
+
+    def get(self, drive_id):
+        presentation = 
+            Presentation.query(Presentation.drive_id == drive_id).get()
+        if not presentation:
+            self.abort(404)
+        slides_decoded = json.loads(presentation.slides)
+        out = {
+            "drive_id": presentation.drive_id,
+            "slides": slides_decoded
+        }
+        self.response.write(json.dumps(out))
+
+    @staticmethod
+    def parse_url(url):
+        parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-_]+)')
+        match = parse_url_regex.search(url)
+        drive_id = match.group(1)
+        return drive_id
 
 
 class GlassHandler(webapp2.RequestHandler):
@@ -108,6 +137,6 @@ class GlassHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/api/create', CreateHandler),
+    ('/api/presentation/<drive_id>', PresentationHandler),
     ('/api/glass', GlassHandler),
 ], debug=True)
