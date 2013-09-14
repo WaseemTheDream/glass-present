@@ -13,6 +13,12 @@ public class Slide {
     private String img_url;
     private Bitmap bitmap;
 
+    public Slide(String speaker_notes, String page_id, String img_url) {
+        this.speaker_notes = speaker_notes;
+        this.page_id = page_id;
+        this.img_url = img_url;
+    }
+
     public Bitmap getBitmap() {
         return bitmap;
     }

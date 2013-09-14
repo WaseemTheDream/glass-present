@@ -42,7 +42,7 @@ public class FullscreenActivity extends Activity {
 	    public String toString() {
 	      return String.format("(name=%s, source=%s)", name, source);
 	    }
-	  }
+	}
 	  
 	  
     private GestureDetector mGestureDetector;
