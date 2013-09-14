@@ -1,5 +1,7 @@
 package com.clarity.glassviewer;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by bonnie on 9/14/13.
  */
@@ -9,6 +11,15 @@ public class Slide {
     private String speaker_notes;
     private String page_id;
     private String img_url;
+    private Bitmap bitmap;
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
 
     public String getSpeaker_notes() {
         return speaker_notes;
