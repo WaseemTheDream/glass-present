@@ -75,3 +75,12 @@ h1 {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.margin-fix {
+  margin-bottom: 1em;
+}
+
+#play-button {
+  display: none;
+}
+>>>>>>> 82aeeab7f6cbae9a6591dcf996d8f1c37aab5b95
