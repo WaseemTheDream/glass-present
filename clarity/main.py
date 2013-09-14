@@ -70,11 +70,19 @@ class GlassHandler(webapp2.RequestHandler):
     """
     Handles glass queries and commands
     """
-    def get(self):
-        pass
 
     def post(self):
-        pass
+        action = self.request.get('action')
+        logging.info('glass posted action ' + action)
+        if action == 'init':
+            presentation_id = int(self.request.get('id'))
+            presentation = ndb.get(presentation_id)
+            loggin.info(presentation_id)
+            self.response.out.write(presentation.drive_id)
+            # TODO: javascript comm stuff
+        elif action == 'change_slide':
+            slide = int(self.request.get('slide'))
+            # TODO: javascript comm stuff
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
