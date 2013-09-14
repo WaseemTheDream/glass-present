@@ -68,7 +68,14 @@ public class FullscreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().hide();
+        //getActionBar().hide();
+        
+        String extra = getIntent().getStringExtra("qr");
+        int pipeIndex = extra.indexOf('|');
+        mPresentationID = extra.substring(0, pipeIndex);
+        mPresenterID = extra.substring(pipeIndex + 1);
+        Log.d("FULLSCREEN", "findme: mPresentationID = " + mPresentationID);
+        Log.d("FULLSCREEN", "findme: mPresenterID = " + mPresenterID);
         
         setContentView(R.layout.activity_fullscreen);
 
@@ -85,54 +92,17 @@ public class FullscreenActivity extends Activity {
 
         mGestureDetector = new GestureDetector(this, mGlassGestureListener);
 
-        /*
-        mSlides = new Slide[]{
-            new Slide("hi this is notes 1111", "a", "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png"),
-            new Slide("hi I am looking at notes 2222!", "a", "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png"),
-            new Slide("hi. I'm lazy.", "a", "http://images.wikia.com/mariofanon/images/c/c9/Toad.png"),
-        };*/
-
-        /*
-        for (int i = 0; i < mSlides.length; i++) {
-            new DownloadImageTask(i).execute(mSlides[i].getImg_url());
-        }
-        */
-        
         new StartPresentationTask().execute();
 
         Log.d("FullscreenActivity", "onCreate complete");
     }
-    /*
-    private String getServerPayload() throws Exception {
-		String url = "http://www.google.com/search?q=developer";
-		 
-		HttpClient client = new DefaultHttpClient();
-		HttpGet request = new HttpGet(url);
- 
-		// add request header
-		request.addHeader("User-Agent", USER_AGENT);
- 
-		HttpResponse response = client.execute(request);
- 
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + 
-                       response.getStatusLine().getStatusCode());
- 
-		BufferedReader rd = new BufferedReader(
-                       new InputStreamReader(response.getEntity().getContent()));
- 
-		StringBuffer result = new StringBuffer();
-		String line = "";
-		while ((line = rd.readLine()) != null) {
-			result.append(line);
-		}
- 
-		return result.toString();
-    }
-     */
+
+
     private void renderSlide() {
 
-        mSlideNumberView.setText(mCurrentSlide + " / " + mSlides.length);
+    	mSlideNumberWrapper.setVisibility(View.VISIBLE);
+    	
+        mSlideNumberView.setText((mCurrentSlide + 1) + " / " + mSlides.length);
 
 
         if (!mDisplayPreview || mCurrentSlide + 1 == mSlides.length) {
@@ -172,13 +142,6 @@ public class FullscreenActivity extends Activity {
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 HttpResponse response = httpclient.execute(httppost);
                 return response;
-                // Log.i("RESPONSE", "sigh... " + response.toString());
-
-                // BufferedReader reader = new BufferedReader(new InputStreamReader(
-                //         response.getEntity().getContent(), "UTF-8"));
-                // String json = reader.readLine();
-                // // Instantiate a JSON object from the request response
-                // JSONArray jsonArray = new JSONArray(json);
 
         } catch(Exception e) {
                 Log.d("Exception", e.toString());
@@ -193,13 +156,6 @@ public class FullscreenActivity extends Activity {
             HttpGet httpGet = new HttpGet(initURL);
             HttpResponse response = httpclient.execute(httpGet);
             return response;
-                // Log.i("RESPONSE", "sigh... " + response.toString());
-
-                // BufferedReader reader = new BufferedReader(new InputStreamReader(
-                //         response.getEntity().getContent(), "UTF-8"));
-                // String json = reader.readLine();
-                // // Instantiate a JSON object from the request response
-                // JSONArray jsonArray = new JSONArray(json);
 
         } catch(Exception e) {
                 Log.d("Exception", e.toString());
@@ -339,8 +295,12 @@ public class FullscreenActivity extends Activity {
                     if (Math.abs(totalYTraveled) > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
                         if(totalYTraveled > 0) {
                             Log.d("Event", "findme: On Fling Down");
+                            mDisplayNotes = false;
+                            renderSlide();
                         } else {
                             Log.d("Event", "findme: On Fling Up");
+                            mDisplayNotes = true;
+                            renderSlide();
                         }
                     }
                 }
