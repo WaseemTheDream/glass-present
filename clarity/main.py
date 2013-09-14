@@ -21,6 +21,7 @@ import jinja2
 import json
 import re
 import urllib
+from getmetadata import get_metadata
 from google.appengine.api import channel
 from google.appengine.ext import ndb
 
@@ -45,7 +46,7 @@ class CreateHandler(webapp2.RequestHandler):
     """
     Handles create requests of presentations from the browser side.
     """
-    parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-]+)')
+    parse_url_regex = re.compile(r'presentation/d/([a-zA-Z0-9\-_]+)')
     def post(self):
         drive_url = json.loads(self.request.body)['driveurl']
         logging.info("Received the drive url: %s", drive_url)
@@ -54,7 +55,7 @@ class CreateHandler(webapp2.RequestHandler):
         presentation = Presentation(drive_id = drive_id)
         presentation_id = presentation.put().id()
         logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
-
+        slides = get_metadata(drive_id)
         token = channel.create_channel(str(presentation_id))
         self.response.write(json.dumps({
             'id' : str(presentation_id),
