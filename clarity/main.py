@@ -33,6 +33,7 @@ class Presentation(ndb.Model):
     drive_id = ndb.StringProperty()
     init = ndb.BooleanProperty(default=False)
     slide = ndb.IntegerProperty(default=1)
+    slides = ndb.StringProperty()
 
 class MainHandler(webapp2.RequestHandler):
     """
@@ -56,6 +57,10 @@ class CreateHandler(webapp2.RequestHandler):
         presentation_id = presentation.put().id()
         logging.info('New presentation (url %s): id %d' % (drive_id, presentation_id))
         slides = get_metadata(drive_id)
+        slides_str = json.dumps(slides)
+        logging.info(slides_str)
+        presentation.slides = slides_str
+        presentation.put()
         token = channel.create_channel(str(presentation_id))
         self.response.write(json.dumps({
             'id' : str(presentation_id),
