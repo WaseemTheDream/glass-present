@@ -31,8 +31,6 @@ JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(MAIN_DIR))
 
 class Presentation(ndb.Model):
     drive_id = ndb.StringProperty()
-    init = ndb.BooleanProperty(default=False)
-    slide = ndb.IntegerProperty(default=1)
     slides = ndb.StringProperty()
 
 class MainHandler(webapp2.RequestHandler):
@@ -86,8 +84,6 @@ class GlassHandler(webapp2.RequestHandler):
         if action == 'init':
             presentation_id = int(self.request.get('id'))
             presentation = Presentation.get_by_id(presentation_id)
-            presentation.init = True
-            presentation.put()
             logging.info(presentation_id)
 
             # Send message to browser client
@@ -95,13 +91,11 @@ class GlassHandler(webapp2.RequestHandler):
                 json.dumps({'status': 'connected'})
             )
 
-            self.response.out.write(presentation.drive_id)
+            self.response.out.write(presentation.slides)
 
         elif action == 'change_slide':
             slide = int(self.request.get('slide'))
             presentation = Presentation.get_by_id(presentation_id)
-            presentation.slide = slide
-            presentation.put()
 
             channel.send_message(str(presentation_id),
                 json.dumps({
