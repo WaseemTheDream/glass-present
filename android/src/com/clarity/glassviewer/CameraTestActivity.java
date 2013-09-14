@@ -129,6 +129,7 @@ public class CameraTestActivity extends Activity
                     previewing = false;
                     mCamera.setPreviewCallback(null);
                     mCamera.stopPreview();
+                    //mCamera.release()
                     
                     SymbolSet syms = scanner.getResults();
                     for (Symbol sym : syms) {

@@ -295,11 +295,11 @@ public class FullscreenActivity extends Activity {
                     if (Math.abs(totalYTraveled) > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
                         if(totalYTraveled > 0) {
                             Log.d("Event", "findme: On Fling Down");
-                            mDisplayNotes = false;
-                            renderSlide();
+                            //mDisplayNotes = false;
+                            //renderSlide();
                         } else {
                             Log.d("Event", "findme: On Fling Up");
-                            mDisplayNotes = true;
+                            mDisplayNotes = !mDisplayNotes;
                             renderSlide();
                         }
                     }

@@ -16,11 +16,12 @@
     android:id="@+id/scanText"
     android:text="Scanning..."
     android:layout_height="wrap_content" 
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:visibility="invisible">
   </TextView>
   <Button
     android:id="@+id/ScanButton"
-    android:text="Scan"
+    android:text="Scan QR code"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
