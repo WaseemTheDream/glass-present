@@ -12,12 +12,13 @@ angular.module('clarityApp')
         data: JSON.stringify(data)
       }).success(function (data, status, headers, config) {
         console.log(data);
-        var presentation_id = data.id;
-        var token = data.token;
-        $location.path('/slides');
+        var drive_id = data.drive_id;
+        var token = data.presenter_id;
+        $location.path('/presentation/' + presentation_id);
       }).error(function (data, status, headers, config) {
-        console.log('Error!');
+        alert('Error!');
         console.log(data);
+        // TODO: Do proper error displaying over here
       });
     };
   });
