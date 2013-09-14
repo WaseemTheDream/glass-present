@@ -106,7 +106,7 @@ public class FullscreenActivity extends Activity {
 
         mGestureDetector = new GestureDetector(this, mGlassGestureListener);
 
-        mSlides = {
+        mSlides = new Slide[]{
             new Slide("hi", "a", "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png"),
             new Slide("hi", "a", "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png"),
             new Slide("hi", "a", "http://images.wikia.com/mariofanon/images/c/c9/Toad.png"),
@@ -172,7 +172,7 @@ public class FullscreenActivity extends Activity {
     private HttpResponse httpPost(String initURL, List<NameValuePair> nameValuePairs) {
         HttpClient httpclient = new DefaultHttpClient();
         try {
-                HttpGet httppost = new HttpPost(initURL);
+                HttpPost httppost = new HttpPost(initURL);
                 UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(nameValuePairs);
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 HttpResponse response = httpclient.execute(httppost);
@@ -199,7 +199,7 @@ public class FullscreenActivity extends Activity {
                 HttpGet httpGet = new HttpGet(getURL);
 
 
-                HttpResponse response = httpclient.execute(httppost);
+                HttpResponse response = httpclient.execute(httpGet);
                 return response;
                 // Log.i("RESPONSE", "sigh... " + response.toString());
 
@@ -257,13 +257,13 @@ public class FullscreenActivity extends Activity {
             nameValuePairs.add(new BasicNameValuePair("presentation_id", mPresentationID));
             HttpResponse response = httpGet(initURL, nameValuePairs);
 
-                Log.i("RESPONSE", "sigh... " + response.toString());
+                // Log.i("RESPONSE", "sigh... " + response.toString());
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(
-                        response.getEntity().getContent(), "UTF-8"));
-                String json = reader.readLine();
-                // Instantiate a JSON object from the request response
-                JSONArray jsonArray = new JSONArray(json);
+                // BufferedReader reader = new BufferedReader(new InputStreamReader(
+                //         response.getEntity().getContent(), "UTF-8"));
+                // String json = reader.readLine();
+                // // Instantiate a JSON object from the request response
+                // JSONArray jsonArray = new JSONArray(json);
 
             return null;
         }
