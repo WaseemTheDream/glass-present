@@ -55,7 +55,7 @@ public class FullscreenActivity extends Activity {
     private int mNumImagesLoaded = 0;
     private int mCurrentSlide = 0;
     private boolean mDisplayPreview = true;
-    private boolean mDisplayNotes = true;
+    private boolean mDisplayNotes = false;
     private String mPresenterID;
     private String mPresentationID;
 
@@ -152,16 +152,6 @@ public class FullscreenActivity extends Activity {
     }
 
     private void renderSlide() {
-        if (mDisplayNotes) {
-            mTextView.setVisibility(View.VISIBLE);
-            mImageView.setVisibility(View.GONE);
-            mTextView.setText(mSlides[mCurrentSlide].getSpeaker_notes());
-        }
-        else {
-            mTextView.setVisibility(View.GONE);
-            mImageView.setVisibility(View.VISIBLE);
-            mImageView.setImageBitmap(mSlides[mCurrentSlide].getBitmap());
-        }
 
         if (!mDisplayPreview || mCurrentSlide + 1 == mSlides.length) {
             mThumbnailView.setVisibility(View.GONE);
@@ -170,6 +160,19 @@ public class FullscreenActivity extends Activity {
             mThumbnailView.setVisibility(View.VISIBLE);
             mThumbnailView.setImageBitmap(mSlides[mCurrentSlide+1].getBitmap());
         }
+
+        if (mDisplayNotes) {
+            mTextView.setVisibility(View.VISIBLE);
+            mImageView.setVisibility(View.GONE);
+            mTextView.setText(mSlides[mCurrentSlide].getSpeaker_notes());
+            mThumbnailView.setVisibility(View.GONE);
+        }
+        else {
+            mTextView.setVisibility(View.GONE);
+            mImageView.setVisibility(View.VISIBLE);
+            mImageView.setImageBitmap(mSlides[mCurrentSlide].getBitmap());
+        }
+
     }
 
     @Override
@@ -326,16 +329,12 @@ public class FullscreenActivity extends Activity {
                             Log.d("Event", "findme: On Fling Forward");
                             if (imagesLoaded() && mCurrentSlide + 1 < mSlides.length) {
                                 goToSlide(mCurrentSlide + 1);
-                                // mCurrentSlide++;
-                                // renderSlide();
                             }
 
                         } else {
                             Log.d("Event", "findme: On Fling Backward");
                             if (imagesLoaded() && mCurrentSlide > 0) {
                                 goToSlide(mCurrentSlide - 1);
-                                // mCurrentSlide--;
-                                // renderSlide();
                             }
                         }
                     }
