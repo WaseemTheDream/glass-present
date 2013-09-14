@@ -78,8 +78,8 @@ class GlassHandler(webapp2.RequestHandler):
 
         if action == 'init':
             presentation_id = int(self.request.get('id'))
-            presentation = ndb.get(presentation_id)
-            presentation.init = true
+            presentation = Presentation.get_by_id(presentation_id)
+            presentation.init = True
             presentation.put()
             logging.info(presentation_id)
             self.response.out.write(presentation.drive_id)
@@ -87,7 +87,7 @@ class GlassHandler(webapp2.RequestHandler):
 
         elif action == 'change_slide':
             slide = int(self.request.get('slide'))
-            presentation = ndb.get(presentation_id)
+            presentation = Presentation.get_by_id(presentation_id)
             presentation.slide = slide
             presentation.put()
             # TODO: javascript comm stuff
