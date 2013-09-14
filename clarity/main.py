@@ -56,6 +56,11 @@ class CreateHandler(webapp2.RequestHandler):
         out = {
             'id' : presentation_id,
             'driveid' : drive_id,
+            'slides' : [
+                {'title': 'Slide 1', 'pageid': 'g103b5c5cc_00'},
+                {'title': 'Slide 2', 'pageid': 'g103b5c5cc_05'},
+                {'title': 'Slide 3', 'pageid': 'g103b5c5e5_00'},
+            ]
         }
         self.response.write(json.dumps(out))
 
