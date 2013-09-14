@@ -147,7 +147,7 @@ class ControllerHandler(webapp2.RequestHandler):
             'page_id': page_id,
         }))
 
-        self.response.out.write(presentation.drive_id)
+        self.response.out.write('true')
 
 
 
