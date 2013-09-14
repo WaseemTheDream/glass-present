@@ -44,22 +44,44 @@ angular.module('clarityApp')
       return d.promise;
     }
 
+    // For debugging without Google Glass
+    $scope.controllerRoundtrip = function () {
+      $.ajax({
+        url: '/api/controller',
+        type: 'POST', 
+        data: {
+          presenter_id: $scope.presenterId,
+          presentation_id: $scope.presentationId,
+          page_id: $scope.pageId
+        },
+        success: function (data) {
+          console.log(data);
+        }
+      });
+    }
+
     $scope.channel = {
       onopen: function () {
-        alert('open');
+        console.log('channel connection established');
       },
-      onmessage: function () {
-        alert('message');
+      onmessage: function (message) {
+        console.log('received channel message');
+        var data = JSON.parse(message.data)
+        if ($scope.pageIdToSlide[data.page_id]) {
+          console.log('Changing slide to page_id ' + data.page_id);
+          $scope.currentSlide = $scope.pageIdToSlide[data.page_id];
+          $scope.$apply()
+        }
       },
       onerror: function () {
         alert('onError');
       },
       onclose: function () {
-        alert('close');
+        console.log('channel connection closed');
       }
     };
 
-    $scope.getSlides().then(function(data) {
+    $scope.getSlides().then(function (data) {
       // Save the slides data and open the first one
       angular.forEach(data.slides, function (value, key) {
         if (key == 0) $scope.currentSlide = value;
@@ -68,6 +90,9 @@ angular.module('clarityApp')
       });
       $scope.presenterId = data.presenter_id;
       $scope.token = data.token;
+
+      console.log(data);
+      console.log('socket:' + $scope.token);
 
       // Establish a channel with the server
       var channel = new goog.appengine.Channel($scope.token);

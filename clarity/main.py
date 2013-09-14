@@ -26,7 +26,7 @@ import uuid
 from google.appengine.api import channel
 from google.appengine.ext import ndb
 
-from getmetadata import get_metadata
+from utils import get_metadata
 
 MAIN_DIR = os.path.dirname(__file__)
 
@@ -103,6 +103,57 @@ def make_channel_name(presentation_id=None, presenter_id=None):
     return str(presentation_id) + str(presenter_id)
 
 
+class ControllerHandler(webapp2.RequestHandler):
+    """
+    Handles remote control queries and commands
+    """
+
+    def get(self, presentation_id):
+        presentation = Presentation.get_by_id(int(presentation_id))
+        if not presentation:
+            self.abort(404)
+
+        slides_decoded = json.loads(presentation.slides)
+        out = {
+            'presentation_id': str(presentation_id),
+            'slides': slides_decoded
+        }
+        self.response.write(json.dumps(out))
+
+    def post(self):
+        page_id = self.request.get('page_id')
+        presentation_id = self.request.get('presentation_id')
+        presenter_id = self.request.get('presenter_id')
+        logging.info('presentation_id: %s', presentation_id)
+        logging.info('presenter_id: %s', presenter_id)
+        presentation = Presentation.get_by_id(int(presentation_id))
+        logging.info(presentation)
+        if not presentation:
+            self.abort(404)
+
+        channel.send_message(make_channel_name(
+            presentation_id=presentation_id,
+            presenter_id=presenter_id,
+        ), json.dumps({
+                'page_id': page_id,
+            })
+        )
+
+        self.response.out.write(presentation.drive_id)
+
+
+
+app = webapp2.WSGIApplication([
+    webapp2.Route('/', MainHandler),
+    webapp2.Route('/api/presentation', PresentationHandler),
+    webapp2.Route('/api/presentation/<presentation_id:\d+>', PresentationHandler),
+    webapp2.Route('/api/controller', ControllerHandler),
+    webapp2.Route('/api/controller/<presentation_id:\d+>', ControllerHandler),
+], debug=True)
+
+
+
+# Legacy code
 class GlassHandler(webapp2.RequestHandler):
     """
     Handles glass queries and commands
@@ -139,10 +190,3 @@ class GlassHandler(webapp2.RequestHandler):
             )
 
             self.response.out.write(presentation.drive_id)
-
-app = webapp2.WSGIApplication([
-    webapp2.Route('/', MainHandler),
-    webapp2.Route('/api/presentation', PresentationHandler),
-    webapp2.Route('/api/presentation/<presentation_id:\d+>', PresentationHandler),
-    webapp2.Route('/api/glass', GlassHandler),
-], debug=True)
