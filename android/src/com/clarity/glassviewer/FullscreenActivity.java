@@ -47,6 +47,7 @@ public class FullscreenActivity extends Activity {
 	  
     private GestureDetector mGestureDetector;
     private GlassGestureListener mGlassGestureListener;
+    private Chronometer mChronometer;
 
     private Bitmap[] mSlideBitmaps;
     private ImageView mImageView;
@@ -64,6 +65,8 @@ public class FullscreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActionBar().hide();
+
         Log.d("GSONTest", "onCreate");
         
         try {
@@ -91,6 +94,9 @@ public class FullscreenActivity extends Activity {
 
         mImageView = (ImageView) findViewById(R.id.imageView);
         mThumbnailView = (ImageView) findViewById(R.id.previewThumbnail);
+        mChronometer = (Chronometer) findViewById(R.id.timer);
+        mChronometer.setVisibility(View.INVISIBLE);
+
         mGlassGestureListener = new GlassGestureListener();
         mSlideBitmaps = new Bitmap[2];
 
@@ -171,6 +177,8 @@ public class FullscreenActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            mChronometer.setVisibility(View.VISIBLE);
+            mChronometer.start();
         }
 
         @Override
