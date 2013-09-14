@@ -45,7 +45,6 @@ def get_metadata (drive_id):
     infile = urllib2.urlopen(drive_url)
     html_str = infile.read().splitlines()[-1]
     infile.close()
-    logging.info(html_str)
     parser = GDParser(drive_id)
     parser.feed(html_str)
     slides = parser.get_slides()
