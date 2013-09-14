@@ -132,32 +132,25 @@ public class FullscreenActivity extends Activity {
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(initURL);
 
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("action", "init"));
+            nameValuePairs.add(new BasicNameValuePair("id", "5733953138851840"));
+
             try {
-//                Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("action", "init"));
-                nameValuePairs.add(new BasicNameValuePair("id", "5733953138851840"));
-                try {
-                    UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(nameValuePairs);
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(nameValuePairs);
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-                    HttpResponse response = httpclient.execute(httppost);
-                    Log.i("RESPONSE", "sigh... " + response.toString());
+                HttpResponse response = httpclient.execute(httppost);
+                Log.i("RESPONSE", "sigh... " + response.toString());
 
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(
-                            response.getEntity().getContent(), "UTF-8"));
-                    String json = reader.readLine();
-                    // Instantiate a JSON object from the request response
-                    JSONArray jsonArray = new JSONArray(json);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        response.getEntity().getContent(), "UTF-8"));
+                String json = reader.readLine();
+                // Instantiate a JSON object from the request response
+                JSONArray jsonArray = new JSONArray(json);
 
-                } catch(Exception e) {
-                    Log.d("Exception", e.toString());
-                }
-
-                // Execute HTTP Post Request
-
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
+            } catch(Exception e) {
+                Log.d("Exception", e.toString());
             }
 
             return null;
