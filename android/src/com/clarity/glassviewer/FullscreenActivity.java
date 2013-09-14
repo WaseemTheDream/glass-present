@@ -28,22 +28,6 @@ import com.google.gson.JsonParser;
 
 public class FullscreenActivity extends Activity {
 	private static final String USER_AGENT = "Mozilla/5.0";
-	
-  static class Foobar {
-		
-	  
-	    private String name;
-	    private String source;
-	    private Foobar(String name, String source) {
-	      this.name = name;
-	      this.source = source;
-	    }
-	    @Override
-	    public String toString() {
-	      return String.format("(name=%s, source=%s)", name, source);
-	    }
-	}
-	  
 	  
     private GestureDetector mGestureDetector;
     private GlassGestureListener mGlassGestureListener;
@@ -73,29 +57,6 @@ public class FullscreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().hide();
-
-        Log.d("GSONTest", "onCreate");
-        
-        try {
-        	Log.d("GSONTest", "Payload = " + getServerPayload());
-        } catch (Exception e) {
-        	System.err.println("There was a problem getting the payload.");
-        }
-        
-        Gson gson = new Gson();
-        Collection collection = new ArrayList();
-        collection.add("hello");
-        collection.add(5);
-        collection.add(new Foobar("GREETINGS", "guest"));
-        String json = gson.toJson(collection);
-        Log.d("GSONTest", "Using Gson.toJson() on a raw collection: " + json);
-        JsonParser parser = new JsonParser();
-        JsonArray array = parser.parse(json).getAsJsonArray();
-        String message = gson.fromJson(array.get(0), String.class);
-        int number = gson.fromJson(array.get(1), int.class);
-        Foobar event = gson.fromJson(array.get(2), Foobar.class);
-        Log.d("GSONTest", "Using Gson.fromJson() to get:  " + message + " " + number + " " + event);
-        
         
         setContentView(R.layout.activity_fullscreen);
 
@@ -110,9 +71,9 @@ public class FullscreenActivity extends Activity {
         mGestureDetector = new GestureDetector(this, mGlassGestureListener);
 
         mSlides = new Slide[]{
-            new Slide("hi", "a", "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png"),
-            new Slide("hi", "a", "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png"),
-            new Slide("hi", "a", "http://images.wikia.com/mariofanon/images/c/c9/Toad.png"),
+            new Slide("hi this is notes 1111", "a", "http://yoshi.2yr.net/pics/yoshis-story-yoshi.png"),
+            new Slide("hi I am looking at notes 2222!", "a", "http://pad3.whstatic.com/images/thumb/0/07/MarioNintendoImage.png/350px-MarioNintendoImage.png"),
+            new Slide("hi. I'm lazy.", "a", "http://images.wikia.com/mariofanon/images/c/c9/Toad.png"),
         };
 
         for (int i = 0; i < mSlides.length; i++) {
