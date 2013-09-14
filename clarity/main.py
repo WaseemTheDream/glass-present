@@ -21,6 +21,7 @@ import jinja2
 import json
 import re
 import urllib
+from google.appengine.api import channel
 from google.appengine.ext import ndb
 
 MAIN_DIR = os.path.dirname(__file__)
@@ -71,6 +72,9 @@ class ViewHandler(webapp2.RequestHandler):
     def get(self):
         drive_id = self.request.get('driveid')
         presentation_id = int(self.request.get('id'))
+
+        token = channel.create_channel(str(presentation_id))
+        # TODO: render a page with the token
         self.response.out.write('Should show doc presentation %s (id %d)' % (drive_id, presentation_id))
 
 class GlassHandler(webapp2.RequestHandler):
@@ -88,15 +92,28 @@ class GlassHandler(webapp2.RequestHandler):
             presentation.init = True
             presentation.put()
             logging.info(presentation_id)
+
+            # Send message to browser client
+            channel.send_message(str(presentation_id),
+                json.dumps({'status': 'connected'})
+            )
+
             self.response.out.write(presentation.drive_id)
-            # TODO: javascript comm stuff
 
         elif action == 'change_slide':
             slide = int(self.request.get('slide'))
             presentation = Presentation.get_by_id(presentation_id)
             presentation.slide = slide
             presentation.put()
-            # TODO: javascript comm stuff
+
+            channel.send_message(str(presentation_id),
+                json.dumps({
+                    'status': 'slide changed',
+                    'slide': slide,
+                })
+            )
+
+            self.response.out.write(presentation.drive_id)
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
